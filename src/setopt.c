@@ -486,7 +486,8 @@ void	config_read(char *path)
 	char	reg_chr;
 	char	zone_buf[MAXLINESTR+1];
 
-	char	c, *p;
+    int     c;
+    char    *p;
 	char	name_buf[MAX_nbuf][MAXLINESTR+1];
 	char	val_buf[MAX_nbuf][MAXLINESTR+1];
 	int 	name_num;
