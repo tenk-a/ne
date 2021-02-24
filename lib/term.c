@@ -42,6 +42,7 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
+#include	<ctype.h>
 
 #ifdef  HAVE_UNISTD_H
 #   include <unistd.h>
@@ -674,7 +675,7 @@ void	term_ungetch(u_char c)
 #endif
 }
 
-int 	term_regetch(c)
+int 	term_regetch(/*c*/)
 {
 #ifndef	TIOCSTI
 	if (ungetnum > 0) 

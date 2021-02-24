@@ -243,15 +243,15 @@ static	void	replace()
 		 if (!rf)
 		 	{
 		 	 char	c;
-		 	 char	buf[LN_dspbuf+1];
+		 	 char	buf2[LN_dspbuf+1];
 
 		 	 CrtDrawAll();
 		 	 term_locate(GetRow(), GetCol()+NumWidth);
 
 		 	 term_color(sysinfo.c_search);
-		 	 memcpy(buf, GetList(y)->buffer+rm.rm_so, rm.rm_eo-rm.rm_so);
-		 	 buf[rm.rm_eo-rm.rm_so]='\0';
-		 	 term_puts(buf);
+		 	 memcpy(buf2, GetList(y)->buffer+rm.rm_so, rm.rm_eo-rm.rm_so);
+		 	 buf2[rm.rm_eo-rm.rm_so]='\0';
+		 	 term_puts(buf2);
 
 		 	 c=keysel("置換しますか? (Y/N/A) :","Yy\r\nNnAa \x1b");
 		 	 if (c=='\x1b')

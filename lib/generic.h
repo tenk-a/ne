@@ -36,6 +36,9 @@
 #ifndef __ELE_GENERIC_H__
 #define __ELE_GENERIC_H__
 
+#include "config.h"
+#include <stddef.h>
+
 typedef	int	bool;
 
 #ifndef	FALSE
