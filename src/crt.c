@@ -309,7 +309,7 @@ static	dspfmt_t	*dspreg_guide(void *vp,int a,int sizex,int sizey)
 			,GetLineOffset()==1 || GetLastNumber()==0? 0: (int)GetLineOffset()*100/(int)GetLastNumber()
 			,le_getcsx(&csrle)
 			,tmp2
-			,csrse.bytes+(int)GetLastNumber()-1
+			,(int)(csrse.bytes+GetLastNumber()-1)
 			,CurrentFileNo+1
 			,kc_char[edbuf[CurrentFileNo].kc]
 			,rm_char[edbuf[CurrentFileNo].rm]

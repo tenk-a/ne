@@ -32,8 +32,8 @@ void	lists_debug()
 	fprintf(stderr,"byte/size buffer\n");
 	while(ed!=NULL)
 		{
-		 fprintf(stderr,"%4d/%4d %p[%s]\n"
-		 	,ed->bytes,ed->size,ed->buffer,ed->buffer);
+		 fprintf(stderr,"%4u/%4u %p[%s]\n"
+		 	,(unsigned)ed->bytes,(unsigned)ed->size,ed->buffer,ed->buffer);
 		 ed=ed->next;
 		}
 	fprintf(stderr,"***\n");
