@@ -356,7 +356,7 @@ legets_lep=&le;
 		  	 le_edit(&le, ch, NONE);
 		  	 continue;
 		  default:
-		  	 if (ch&KF_normalcode);
+		  	 if (ch&KF_normalcode)
 		  	 	{
 		  	 	 ch&= ~KF_normalcode;
 		  	 	 if (iseuc(ch) || ch==0x8e)
