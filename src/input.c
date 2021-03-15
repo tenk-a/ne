@@ -34,10 +34,13 @@ void InputAndCrt(int key)
     if (sysinfo.overwritef)
         se_delete(IsKanjiPosition() ? 2 : 1, FALSE);
 
-    if (iseuc(key) || key == 0x8e) {
+    if (iseuc(key) || key == 0x8e)
+    {
         LeditInput(key << 8 | term_inkey(), NONE);
         term_locate(0, GetRow());
-    } else {
+    }
+    else
+    {
         LeditInput(key, NONE);
     }
 
@@ -46,9 +49,7 @@ void InputAndCrt(int key)
 
 char* HisGets(char* dest, const char* message, int listID)
 {
-    return
-        legets_gets(message, dest, GetColWidth(), MAXLINESTR, listID) == ESCAPE ?
-        	NULL : dest;
+    return legets_gets(message, dest, GetColWidth(), MAXLINESTR, listID) == ESCAPE ? NULL : dest;
 }
 
 int GetS(const char* message, char* buffer)

@@ -51,8 +51,7 @@ void edbuf_init()
         edbuf[i].pm    = FALSE;
     }
 
-    for (CurrentFileNo = MAX_edfiles
-            ; CurrentFileNo < MAX_edbuf; ++CurrentFileNo)
+    for (CurrentFileNo = MAX_edfiles; CurrentFileNo < MAX_edbuf; ++CurrentFileNo)
         FileStartInit(FALSE);
 }
 
@@ -121,7 +120,8 @@ static bool edbuf_rm_func(FILE* fp, const char* fn)
         n += strlen(buf) + 1;
         q = (char*)mem_alloc(n + 1);
         if (p == NULL)
-            sprintf(q, "%s\n", buf);      else
+            sprintf(q, "%s\n", buf);
+        else
             sprintf(q, "%s%s\n", p, buf);
         free(p);
         p = q;
@@ -302,7 +302,10 @@ void filesave_proc(const char* s, FILE* fp)
         return;
     strjncpy(buf, s, MAXEDITLINE);
     if (*s == '\0' || s[strlen(s) - 1] != '\n')
-        f = FALSE; else
+    {
+        f                  = FALSE;
+    }
+    else
     {
         buf[strlen(s) - 1] = '\0';
         f                  = TRUE;
@@ -429,7 +432,8 @@ int fileopen(char* filename)
             return TRUE;
         }
         if (access(filename, R_OK) == -1)
-            inkey_wait(PERMISSION_MSG); else
+            inkey_wait(PERMISSION_MSG);
+        else
             inkey_wait("不明なエラー");
         return FALSE;
     }
@@ -451,12 +455,16 @@ int fileopen(char* filename)
     /* CR/LFモードの確定 */
     n = max(ki.n_cr, ki.n_lf);
     if (n == 0)
-        edbuf[CurrentFileNo].rm = 0; else
+    {
+        edbuf[CurrentFileNo].rm = 0;
+    }
+    else
     {
         nx = n > 10 ? 10 : 1;
 
         if (n / nx > ki.n_cr)
-            edbuf[CurrentFileNo].rm = RM_lf; else
+            edbuf[CurrentFileNo].rm = RM_lf;
+        else
             edbuf[CurrentFileNo].rm = n / nx > ki.n_lf ? RM_cr : RM_crlf;
     }
 
@@ -500,7 +508,10 @@ bool RenameFile(int current_no, const char* s)
     struct stat sbuf;
 
     if (s != NULL && *s != '\0')
-        strcpy(fn, s); else
+    {
+        strcpy(fn, s);
+    }
+    else
     {
         strcpy(fn, edbuf[current_no].path);
         if (HisGets(fn, RENAME_MSG, FOPEN_SYSTEM) == NULL)
@@ -530,8 +541,7 @@ bool RenameFile(int current_no, const char* s)
         return FALSE;
 
     SetFileChangeFlag();
-    edbuf[current_no].ct = stat(edbuf[current_no].path, &sbuf) == -1 ?
-                                 -1 : sbuf.st_ctime;
+    edbuf[current_no].ct = stat(edbuf[current_no].path, &sbuf) == -1 ? -1 : sbuf.st_ctime;
     return TRUE;
 }
 
@@ -768,10 +778,12 @@ void       op_menu_file()
 
     res = menu_vselect(-1, -1, 10, MENU_OPEN_MSG, MENU_CLOSE_MSG, MENU_SAVE_MSG
                     , MENU_SAVEAS_MSG, MENU_CLOSE_AF_MSG, MENU_SAVE_PROFILE_MSG
-                    , MENU_RENAME_MSG, MENU_REFRESH_CF_MSG, MENU_ESCAPE_SHELL_MSG,
-                    MENU_INSERT_OUTPUT_MSG);
+                    , MENU_RENAME_MSG, MENU_REFRESH_CF_MSG, MENU_ESCAPE_SHELL_MSG
+                    , MENU_INSERT_OUTPUT_MSG
+          );
 
-    switch (res) {
+    switch (res)
+    {
     case 0:
         op_file_open();
         break;
@@ -859,8 +871,7 @@ int SelectFileMenu()
             continue;
         if (i < CurrentFileNo)
             m++;
-        sprintf(tmpbuff[j], "%-.*s %1s ", GetColWidth() - 6, edbuf[i].path
-                , (edbuf[i].cf ? "*" : ""));
+        sprintf(tmpbuff[j], "%-.*s %1s ", GetColWidth() - 6, edbuf[i].path, (edbuf[i].cf ? "*" : ""));
         j++;
     }
 

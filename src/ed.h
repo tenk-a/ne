@@ -168,9 +168,20 @@ VAL int         BackFileNo;
 //csrse
 VAL int         OnMessage_Flag;
 
-typedef enum { REPLM_all, REPLM_before, REPLM_after, REPLM_block } replm_t;
+typedef enum
+{
+    REPLM_all,
+    REPLM_before,
+    REPLM_after,
+    REPLM_block
+} replm_t;
 
-typedef enum { BLKM_none, BLKM_x, BLKM_y } blkm_t;
+typedef enum
+{
+    BLKM_none,
+    BLKM_x,
+    BLKM_y
+} blkm_t;
 
 typedef struct
 {
@@ -393,8 +404,7 @@ extern const char* kanji_fromeuc(char* s, size_t bytes, const char* t, int kc);
 
 extern int      file_knjchk(FILE* fp);
 extern int      file_gets(char* s, size_t bytes, FILE* fp, int* n_cr, int* n_lf);
-extern void     kanji_toeuc(char* s, size_t bytes, const char* t
-                            , bool f_sjis, int* jm);
+extern void     kanji_toeuc(char* s, size_t bytes, const char* t, bool f_sjis, int* jm);
 
 #define JM_ank      0
 #define JM_kana     1

@@ -36,7 +36,8 @@ SHELL void op_search_getword()
     int lx;
 
     if (*s_get == '\0')
-        lx = csrle.lx;                  else
+        lx = csrle.lx;
+    else
         lx = csrle.lx + strlen(s_get);
 
     lx = kanji_tknext(csrle.buf, lx, FALSE) - csrle.lx;
@@ -119,7 +120,8 @@ SHELL void op_search_in()
     {
         edbuf[CurrentFileNo].pm = FALSE;
         *s_search               = '\0';
-    } else
+    }
+    else
     {
         lm_mark(GetLineOffset(), 0);
         edbuf[CurrentFileNo].pm = TRUE;
@@ -144,12 +146,12 @@ SHELL void op_search_prev()
     csr_leupdate();
     system_msg(SEARCHING_MSG);
 
-    y = search_prev(s_search,
-                    GetBufferOffset() - 1, GetLineOffset(), &rm);
+    y = search_prev(s_search, GetBufferOffset() - 1, GetLineOffset(), &rm);
 
     // crt_ledraw();
     if (y == -1)
-        system_msg(NOT_FOUND_MSG); else
+        system_msg(NOT_FOUND_MSG);
+    else
         cursor_move(rm.rm_so, y);
 }
 
@@ -167,12 +169,12 @@ SHELL void op_search_next()
 
     csr_leupdate();
     system_msg(SEARCHING_MSG);
-    y = search_next(s_search,
-                    GetBufferOffset() + 1, GetLineOffset(), &rm);
+    y = search_next(s_search, GetBufferOffset() + 1, GetLineOffset(), &rm);
     // crt_ledraw();
 
     if (y == -1)
-        system_msg(NOT_FOUND_MSG);  else
+        system_msg(NOT_FOUND_MSG);
+    else
         cursor_move(rm.rm_so, y);
 }
 
@@ -310,10 +312,12 @@ SHELL void op_search_repl()
 
     //  nums=blck_ismode()?4:3;
     nums = 3;
-    res  = menu_vselect(GetCol(), GetRow(), nums, REPLACE_ALL_MSG
-                        , REPLACE_FORWARD_MSG, REPLACE_BACK_MSG, REPLACE_INSIDEBLOCK_MSG );
+    res  = menu_vselect(GetCol(), GetRow(), nums
+                , REPLACE_ALL_MSG, REPLACE_FORWARD_MSG, REPLACE_BACK_MSG, REPLACE_INSIDEBLOCK_MSG
+           );
 
-    switch (res) {
+    switch (res)
+    {
     case -1:
         return;
     case 0:

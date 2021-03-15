@@ -472,7 +472,8 @@ void term_init()
         term.ln_insert      = "\033[%dL";
         term.ln_delete      = "\033[%dM";
         term.cn_locate      = "\033[%i%d;%dH";
-    } else
+    }
+    else
     {
         term.sizey = tgetnum("li");
         term.sizex = tgetnum("co");
@@ -551,8 +552,10 @@ int term_getch()
     u_char ch;
     int    i;
 
-    while ((i = read(fileno(term.fp_tty), &ch, sizeof(u_char))) < 0 && errno == EINTR) ;
-    if (i < sizeof(u_char)) return (EOF);
+    while ((i = read(fileno(term.fp_tty), &ch, sizeof(u_char))) < 0 && errno == EINTR)
+        ;
+    if (i < sizeof(u_char))
+        return (EOF);
     return ((int)ch);
 
     /*  while ((ch=fgetc(term.fp_tty))==EOF)
@@ -619,14 +622,16 @@ void term_csr_flush()
     if (term.md_cursor0 != term.md_cursor)
     {
         if (term.md_cursor == CS_normal)
-            term_tputs(term.t_normalcursor); else
+            term_tputs(term.t_normalcursor);
+        else
             term_tputs(term.t_hidecursor);
 
         term.md_cursor0 = term.md_cursor;
     }
 
     if (term.md_cursor == CS_hide)
-        term_locate(0, term.sizex - 1); else
+        term_locate(0, term.sizex - 1);
+    else
         term_locate(y, x);
 
     term_locate_flush();
@@ -693,7 +698,8 @@ static void term_locate_flush()
             *q++    = '\r';
             term.x0 = 0;
             --n;
-        } else
+        }
+        else
         {
             while (n > 0 && term.x0 > term.x)
             {
@@ -716,12 +722,13 @@ static void term_locate_flush()
  failed:
         //fprintf(stderr, " ***\n");
         term_tputs(p);
-    } else
+    }
+    else
     {
         *q = '\0';
         term_tputs(buf);
-        //       fputs(buf, term.fp_tty);
-        //fprintf(stderr, "[%s]\n", buf);
+        // fputs(buf, term.fp_tty);
+        // fprintf(stderr, "[%s]\n", buf);
     }
 
     term.x0 = term.x;
@@ -775,10 +782,14 @@ void term_puts(const char* s)
         // ctl code ½èÍý??
 
         if (nbytes(*s) == 1)
-            term.scr[term.y][term.x] = SCR_code(term.cl, *s & 0xff); else
+        {
+            term.scr[term.y][term.x] = SCR_code(term.cl, *s & 0xff);
+        }
+        else
         {
             if (term.x + 1 == term.sizex)
                 break;
+
             n                          = (*s & 0xff) << 8 | (*(s + 1) & 0xff);
             term.scr[term.y][term.x]   = SCR_code(term.cl, n);
             term.scr[term.y][++term.x] = SCR_ignore;
@@ -828,7 +839,7 @@ static void term_color_flush()
             term.cl0 =  AC_normal; else
             term.cl0 &= ~AC_under;
         }
-*/
+    */
     if ((isunder(term.cl0)   && !isunder(term.cl))   ||
         (isreverse(term.cl0) && !isreverse(term.cl)) ||
         (isbold(term.cl0)    && !isbold(term.cl)))
@@ -920,7 +931,8 @@ static void term_scroll_dn(int n)
         // term_tparam(buf, term.ln_insert, n, 0);
         // term_tputs(buf);
         term_tputs(tparm(term.ln_insert, n));
-    } else
+    }
+    else
     {
         while (n-- > 0)
             term_tputs(term.l_insert);
@@ -936,7 +948,8 @@ static void term_scroll_up(int n)
         // term_tparam(buf, term.ln_delete, n, 0);
         // term_tputs(buf);
         term_tputs(tparm(term.ln_delete, n));
-    } else
+    }
+    else
     {
         while (n-- > 0)
             term_tputs(term.l_delete);
@@ -984,8 +997,7 @@ static void term_all_flush()
 
                 p = term.scr0[term.sizey - 1];
 
-                memmove(term.scr0 + i + 1, term.scr0 + i,
-                        sizeof(void*) * (term.sizey - i - 1));
+                memmove(term.scr0 + i + 1, term.scr0 + i, sizeof(void*) * (term.sizey - i - 1));
 
                 term.scr0[i] = p;
                 term_scr_clr(term.scr0[i], 0);
@@ -1007,8 +1019,7 @@ static void term_all_flush()
 
                 p = term.scr0[i];
 
-                memmove(term.scr0 + i, term.scr0 + i + 1,
-                        sizeof(void*) * (term.sizey - i - 1));
+                memmove(term.scr0 + i, term.scr0 + i + 1, sizeof(void*) * (term.sizey - i - 1));
 
                 term.scr0[term.sizey - 1] = p;
                 term_scr_clr(term.scr0[term.sizey - 1], 0);
@@ -1050,7 +1061,8 @@ static void term_all_flush()
                         f = TRUE;
                     ++x;
                 }
-            } else
+            }
+            else
             {
                 while (x < n && nbytes((p[x] & 0xff00) >> 8) != 2 && nbytes((p0[x] & 0xff00) >> 8) != 2)
                 {
@@ -1084,7 +1096,10 @@ static void term_all_flush()
 
                 c = SCR_char(p[term.x]);
                 if ((c & 0xffff00) == 0)
-                    fputc(c, term.fp_tty); else
+                {
+                    fputc(c, term.fp_tty);
+                }
+                else
                 {
                     fputc((c & 0xff00) >> 8, term.fp_tty);
                     fputc(c & 0xff, term.fp_tty);

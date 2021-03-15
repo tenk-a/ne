@@ -23,12 +23,15 @@ int IsThisKanjiPosition(int offset, const char* buffer)
     int  Iskanji_flg;
 
     Iskanji_flg = FALSE;
-    for (i = 0; i <= offset; i++) {
+    for (i = 0; i <= offset; i++)
+    {
         if (iskanji(buffer[i]) && iskanji(buffer[i + 1]))
         {
             i++;
             Iskanji_flg = TRUE;
-        } else {
+        }
+        else
+        {
             Iskanji_flg = FALSE;
         }
     }
@@ -65,12 +68,12 @@ static int char_getctype(int c)
     if (c == 0)
         return 0;
 
-    // if (isspace(c&0xff)|| (c<0x80 && iscntrl(c)))
+    //  if (isspace(c&0xff)|| (c<0x80 && iscntrl(c)))
     if (isspace(c & 0xff) || (!isprint(c & 0xff) && !iskanji(c)))
         return CT_skip;
     if (isalnum(c & 0xff) || c == '_')
         return CT_alnum;
-    // if (c<=0xff)
+    //  if (c<=0xff)
     return CT_other;
 }
 
@@ -105,14 +108,17 @@ int kanji_tknext(const char* s, int a, bool f)
     if (iskanji(s[a]))
     {
         pa = kanji_getctype(s[a], s[a + 1]);
-        do {
+        do
+        {
             a += 2;
         } while (iskanji(s[a]) && (pa & kanji_getctype(s[a], s[a + 1])) != 0);
         pb = char_getctype(s[a]);
-    } else
+    }
+    else
     {
         pa = char_getctype(s[a]);
-        do {
+        do
+        {
             ++a;
             pb = char_getctype(s[a]);
         } while (pa == pb && !iskanji(s[a]));
@@ -142,8 +148,7 @@ int kanji_tkprev(const char* s, int a, bool f)
     if (f && !IsThisKanjiPosition(a - 1, s) && pa == CT_skip)
     {
         --a;
-        while (a > 0 && !IsThisKanjiPosition(a, s)
-                     && pa == char_getctype(s[a]))
+        while (a > 0 && !IsThisKanjiPosition(a, s) && pa == char_getctype(s[a]))
             --a;
         pa = char_getctype(s[a]);
     }
@@ -155,17 +160,18 @@ int kanji_tkprev(const char* s, int a, bool f)
     {
         --a;
         pa = kanji_getctype(s[a], s[a + 1]);
-        do {
+        do
+        {
             a -= 2;
-        } while (a >= 0 && IsThisKanjiPosition(a, s) &&
-                 (pa & kanji_getctype(s[a], s[a + 1])) != 0);
+        } while (a >= 0 && IsThisKanjiPosition(a, s) && (pa & kanji_getctype(s[a], s[a + 1])) != 0);
         ++a;
-    } else
+    }
+    else
     {
-        do {
+        do
+        {
             --a;
-        } while (a >= 0 && (a == 0 || !IsThisKanjiPosition(a - 1, s))
-                    && pa == char_getctype(s[a]));
+        } while (a >= 0 && (a == 0 || !IsThisKanjiPosition(a - 1, s)) && pa == char_getctype(s[a]));
     }
     ++a;
     return a;
@@ -243,7 +249,10 @@ const char* kanji_fromeuc(char* s, size_t bytes, const char* t, int kc)
         {
             c = *t++;
             if (c == 0x8e && iskana(*t))
-                c = *t++; else
+            {
+                c = *t++;
+            }
+            else
             {
                 if (iseuc(c) && iseuc(*t))
                 {
@@ -289,7 +298,8 @@ const char* kanji_fromeuc(char* s, size_t bytes, const char* t, int kc)
                 }
 
                 c = *t++;
-            } else
+            }
+            else
             {
                 if (!iseuc(c) && km != KM_ank)
                 {
@@ -307,7 +317,8 @@ const char* kanji_fromeuc(char* s, size_t bytes, const char* t, int kc)
             --bytes;
         }
         if (km != KM_ank && bytes >= 3)
-            strcpy(s, "\x1b(B"); else
+            strcpy(s, "\x1b(B");
+        else
             *s = '\0';
     }
     return p;
@@ -348,10 +359,12 @@ int file_knjchk(FILE* fp)
         if (f_euc)
         {
             if (iseuc(c))
-                ++n_euc; else
+                ++n_euc;
+            else
                 ++n_euc_i;
             f_euc = FALSE;
-        } else
+        }
+        else
         {
             if (iseuc(c))
                 f_euc = TRUE;
@@ -360,10 +373,12 @@ int file_knjchk(FILE* fp)
         if (f_sjis)
         {
             if (issjis2(c))
-                ++n_sjis; else
+                ++n_sjis;
+            else
                 ++n_sjis_i;
             f_sjis = FALSE;
-        } else
+        }
+        else
         {
             if (issjis1(c))
                 f_sjis = TRUE;
@@ -384,7 +399,8 @@ int file_gets(char* s, size_t bytes, FILE* fp, int* n_cr, int* n_lf)
         if (c == LF || f_cr)
         {
             if (c == LF)
-                ++*n_lf; else
+                ++*n_lf;
+            else
                 ungetc(c, fp);
             c = 0;
             break;
@@ -497,7 +513,8 @@ void kanji_toeuc(char* s, size_t bytes, const char* t, bool f_sjis, int* jm)
                 sjc = 0;
                 --t;
                 c = *t;
-            } else
+            }
+            else
             {
                 if (issjis1(c))
                 {

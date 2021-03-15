@@ -107,7 +107,8 @@ void makev_proc(int a, mitem_t* mip, void* vp)
 
     p = va_arg(args, char*);
     if (p == NULL)
-        strcpy(mip->str, "null"); else
+        strcpy(mip->str, "null");
+    else
         strcpy(mip->str, p);
 
     va_copy(*(va_list*)vp, args);
@@ -205,7 +206,10 @@ dspfmt_t* dspreg_menu(void* vp, int y, int sizex, int sizey)
         int a;
 
         if (*mnp->title == '\0')
-            y = sizey - 1; else
+        {
+            y = sizey - 1;
+        }
+        else
         {
             a = min(strlen(mnp->title), sizex - 3 - 3);
 
@@ -242,7 +246,8 @@ dspfmt_t* dspreg_menu(void* vp, int y, int sizex, int sizey)
     strjfcpy(buf, mnp->mitem[mnp->sy + y].str, LN_dspbuf, sizex - 4);
     dfp = dsp_fmtinit(buf, dfp);
     if (mnp->cy == y && !mnp->df)
-        dfp->col = mnp->mitem[mnp->sy + y].cc; else
+        dfp->col = mnp->mitem[mnp->sy + y].cc;
+    else
         dfp->col = mnp->mitem[mnp->sy + y].nc;
 
     dfp = dsp_fmtinit(" |", dfp);

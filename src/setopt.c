@@ -216,7 +216,8 @@ void sysinfo_optset()
 
     p = hash_get(sysinfo.vp_def, "tabcode");
     if (p == NULL)
-        sysinfo.tabcode = -1; else
+        sysinfo.tabcode = -1;
+    else
         sysinfo.tabcode = *p;
 
     p = hash_get(sysinfo.vp_def, "tabstop");
@@ -244,7 +245,8 @@ void sysinfo_optset()
     sysinfo.numberf     = hash_istrue(sysinfo.vp_def, "number"      );
 
     if (hash_istrue(sysinfo.vp_def, "AnsiColor"))
-        term_color_enable(); else
+        term_color_enable();
+    else
         term_color_disable();
 
     sysinfo.c_block     = term_cftocol(hash_get(sysinfo.vp_def, "col_block"    ));
@@ -269,10 +271,14 @@ void sysinfo_optset()
 void opt_set(const char* s, const char* t)
 {
     if (t != NULL)
-        hash_set(sysinfo.vp_def, s, t); else
+    {
+        hash_set(sysinfo.vp_def, s, t);
+    }
+    else
     {
         if (hash_istrue(sysinfo.vp_def, s))
-            hash_set(sysinfo.vp_def, s, "false"); else
+            hash_set(sysinfo.vp_def, s, "false");
+        else
             hash_set(sysinfo.vp_def, s, "true");
     }
     sysinfo_optset();
@@ -363,13 +369,15 @@ SHELL void op_menu_opt()
     menu_t menu;
     int    res;
 
-    do {
+    do
+    {
         menu_iteminit(&menu);
         menu_itemmake(&menu, option_set_proc, 13, NULL);
         res = menu_select(&menu);
         menu_itemfin(&menu);
 
-        switch (res) {
+        switch (res)
+        {
         case 0:
             opt_set("number", NULL);
             break;
@@ -469,7 +477,8 @@ void config_read(char* path)
         fp = fopen(path, "r");
         if (fp == NULL)
             return;
-    } else
+    }
+    else
     {
         char buf[MAXLINESTR + 1];
 
@@ -725,8 +734,7 @@ void config_read(char* path)
                     {
                         for (j = 1; j < val_num; ++j)
                         {
-                            kdp->args[j - 1] =
-                                (char*)mem_alloc(strlen(val_buf[j]) + 1);
+                            kdp->args[j - 1] = (char*)mem_alloc(strlen(val_buf[j]) + 1);
                             strcpy(kdp->args[j - 1], val_buf[j]);
                         }
                         kdp->args[j - 1] = NULL;

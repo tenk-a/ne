@@ -65,12 +65,16 @@ static void crt_draw_proc(const char* s, crt_draw_t* gp)
     cf = FALSE;
     bf = FALSE;
     if (s == NULL)
-        strcpy(buf_dsp, "~"); else
+    {
+        strcpy(buf_dsp, "~");
+    }
+    else
     {
         strcpy(buf, gp->line == GetLineOffset() ? csrle.buf : s);
 
         if (*s == '\0' || s[strlen(s) - 1] != '\n')
-            strcat(buf, "[EOF]"); else
+            strcat(buf, "[EOF]");
+        else
             cf = sysinfo.crmarkf;
         if (*buf != '\0' && buf[strlen(buf) - 1] == '\n')
             buf[strlen(buf) - 1] = '\0';
@@ -83,7 +87,10 @@ static void crt_draw_proc(const char* s, crt_draw_t* gp)
         {
             m = kanji_posbuf(n, p);
             if (m == ln)
-                sx = ln; else
+            {
+                sx = ln;
+            }
+            else
             {
                 if (sx != n)
                     memset(p + m, ' ', kanji_countbuf(p[m]));
@@ -106,7 +113,8 @@ static void crt_draw_proc(const char* s, crt_draw_t* gp)
     {
         term_color_normal();
         term_puts(p);
-    } else
+    }
+    else
     {
         n = 0;
 
@@ -259,7 +267,10 @@ static dspfmt_t* dspreg_guide(void* vp, int a, int sizex, int sizey)
     }
 
     if (edbuf[CurrentFileNo].pm)
-        dfp = dsp_fmtinit("S", NULL); else
+    {
+        dfp = dsp_fmtinit("S", NULL);
+    }
+    else
     {
         dfp      = dsp_fmtinit("P", NULL);
         dfp->col = AC_reverse;
@@ -267,14 +278,20 @@ static dspfmt_t* dspreg_guide(void* vp, int a, int sizex, int sizey)
     dfpb = dfp;
 
     if (sysinfo.overwritef)
-        dfp = dsp_fmtinit("R", dfp); else
+    {
+        dfp = dsp_fmtinit("R", dfp);
+    }
+    else
     {
         dfp      = dsp_fmtinit("i", dfp);
         dfp->col = AC_reverse;
     }
 
     if (GetBufferOffset() >= strlen(csrle.buf))
-        cn = 0; else
+    {
+        cn = 0;
+    }
+    else
     {
         cn = csrle.buf[GetBufferOffset()] & 0xff;
         if (iskanji(cn))
@@ -282,7 +299,8 @@ static dspfmt_t* dspreg_guide(void* vp, int a, int sizex, int sizey)
     }
 
     if (*sysinfo.doublekey != '\0')
-        strcpy(tmp2, sysinfo.doublekey); else
+        strcpy(tmp2, sysinfo.doublekey);
+    else
         sprintf(tmp2, "%04x", cn);
 
     p      = edbuf[CurrentFileNo].path;

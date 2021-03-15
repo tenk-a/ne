@@ -56,13 +56,17 @@ typedef struct
 
 eff_t eff;
 
-enum { SA_none, SA_fname, SA_ext };
+enum
+{
+    SA_none,
+    SA_fname,
+    SA_ext
+};
 
 typedef struct fop
 {
     int   (*file_func)(const char*, struct stat*, const char*, struct fop*);
-    int   (*dir_func)(const char*, struct stat*, const char*
-                        , bool, struct fop*);
+    int   (*dir_func)(const char*, struct stat*, const char*, bool, struct fop*);
     char*   title;
 
     int     om;     /* overwrite mode. */

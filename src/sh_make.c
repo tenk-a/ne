@@ -203,7 +203,8 @@ int main(int argc, char* argv[])
                 p += 3;
             printf("\t KF_%s", p);
             if (i + 1 < func_n[f])
-                puts(","); else
+                puts(",");
+            else
                 puts("");
         }
         puts("\t};");
@@ -230,15 +231,20 @@ int main(int argc, char* argv[])
             for (i = 0; i < func_max; ++i)
             {
                 if (func_n[f] > i)
-                    fprintf(fpw, "\t\t \"%s\"", func[f][i].name); else
+                    fprintf(fpw, "\t\t \"%s\"", func[f][i].name);
+                else
                     fputs("\t\t \"\"", fpw);
                 if (i + 1 < func_max)
-                    fputs(",\n", fpw); else
+                    fputs(",\n", fpw);
+                else
                     fputs("\n", fpw);
             }
             fputs("\t\t}", fpw);
             if (f + 1 >= region_max)
-                fputs("\n", fpw); else
+            {
+                fputs("\n", fpw);
+            }
+            else
             {
                 fputs(",\n"
                       "\t\t{\n", fpw);
@@ -256,15 +262,20 @@ int main(int argc, char* argv[])
             for (i = 0; i < func_max; ++i)
             {
                 if (func_n[f] > i && func[f][i].args > 0)
-                    fprintf(fpw, "\t\t (void (*)())%s", func[f][i].name); else
+                    fprintf(fpw, "\t\t (void (*)())%s", func[f][i].name);
+                else
                     fputs("\t\t dummy", fpw);
                 if (i + 1 < func_max)
-                    fputs(",\n", fpw); else
+                    fputs(",\n", fpw);
+                else
                     fputs("\n", fpw);
             }
             fputs("\t\t}", fpw);
             if (f + 1 >= region_max)
-                fputs("\n", fpw); else
+            {
+                fputs("\n", fpw);
+            }
+            else
             {
                 fputs(",\n"
                       "\t\t{\n", fpw);

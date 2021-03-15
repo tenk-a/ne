@@ -66,7 +66,8 @@ void strjncpy(char* s, const char* t, size_t ln)
     {
         *p = *t;
         if (kf)
-            kf = FALSE; else
+            kf = FALSE;
+        else
             kf = iseuc(*p);
     }
 
@@ -110,7 +111,10 @@ bool mole_dir(const char* s)
             return TRUE;
         p = strchr(p, '/');
         if (p == NULL)
-            strcpy(buf, s); else
+        {
+            strcpy(buf, s);
+        }
+        else
         {
             memcpy(buf, s, p - s);
             buf[p - s] = '\0';

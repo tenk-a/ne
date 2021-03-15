@@ -102,7 +102,10 @@ void dsp_regview(dspreg_t* drp)
             {
                 //fprintf(stderr," *%p\n", dfp->next);
                 if (dfp->next == NULL)
-                    p = spc_buf; else
+                {
+                    p = spc_buf;
+                }
+                else
                 {
                     dfp = dfp->next;
                     p   = dfp->str;
@@ -183,8 +186,7 @@ void dsp_regrm(dspreg_t* drp)
         return;
 
     if (i + 1 < dspall.drp_num)
-        memcpy(&dspall.drp[i], &dspall.drp[i + 1]
-                , sizeof(dspreg_t*) * dspall.drp_num - i - 1);
+        memcpy(&dspall.drp[i], &dspall.drp[i + 1], sizeof(dspreg_t*) * dspall.drp_num - i - 1);
     --dspall.drp_num;
 }
 

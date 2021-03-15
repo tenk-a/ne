@@ -8,7 +8,11 @@
 #include "sh_defs.h"
 #include "function.h"
 
-typedef enum{KDM_func, KDM_macro}   kdm_t;
+typedef enum
+{
+    KDM_func,
+    KDM_macro
+} kdm_t;
 
 #define MAX_args    4
 

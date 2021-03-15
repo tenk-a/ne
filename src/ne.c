@@ -78,7 +78,10 @@ void ne_loop(int region)
             continue;
 
         if ((key & KF_normalcode) == 0)
-            funclist[0][key](); else
+        {
+            funclist[0][key]();
+        }
+        else
         {
             if (region == 0)
                 InputAndCrt(key & ~KF_normalcode);
@@ -107,12 +110,16 @@ void ne_init()
 
     p = getenv("HOME");
     if (p != NULL)
-        strcpy(sysinfo.nxpath, p); else
+    {
+        strcpy(sysinfo.nxpath, p);
+    }
+    else
     {
         struct passwd* pw;
         pw = getpwuid(geteuid());
         if (pw != NULL)
-            strcpy(sysinfo.nxpath, pw->pw_dir); else
+            strcpy(sysinfo.nxpath, pw->pw_dir);
+        else
             getcwd(sysinfo.nxpath, LN_path);
     }
     strcat(sysinfo.nxpath, "/.ne");
@@ -216,7 +223,10 @@ bool ne_arg(int argc, char* argv[])
     for (; optcount < argc; ++optcount)
     {
         if (*argv[optcount] == '+')
-            line = atoi(argv[optcount] + 1); else
+        {
+            line = atoi(argv[optcount] + 1);
+        }
+        else
         {
             if (FileOpenOp(argv[optcount]))
                 f = TRUE;
@@ -287,7 +297,8 @@ void CommandCom(char* sys_buff)
         puts(TYPE_EXIT_MSG);
         system(sysinfo.shell);
         f = FALSE;
-    } else
+    }
+    else
     {
         puts(sys_buff);
         system(sys_buff);
@@ -400,7 +411,8 @@ SHELL void op_misc_insert_output(void)
                 system_msg(strerror(errno));
                 term_inkey();
                 system_msg("");
-            } else
+            }
+            else
             {
                 EditLine *ed, *ed_new;
                 bool      f;

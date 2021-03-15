@@ -277,7 +277,10 @@ int term_inkey()
     int i, j, ch, key, start, end, s, e;
 
     if (key_ring_in != key_ring_out && key_skip < MAX_skip)
-        ++key_skip; else
+    {
+        ++key_skip;
+    }
+    else
     {
         key_skip = 0;
         term_csr_flush();
@@ -302,7 +305,8 @@ int term_inkey()
             {
                 if (end != -1)
                     break;
-            } else
+            }
+            else
             {
                 if (esc[j].len == i + 1)
                     return (esc[j].scode);
@@ -1770,7 +1774,10 @@ void term_escdefault()
 
         p = getenv("NE_TERM");
         if (p != NULL)
-            sprintf(buf, "term.%s", p); else
+        {
+            sprintf(buf, "term.%s", p);
+        }
+        else
         {
             p = getenv("TERM");
             if (p != NULL)

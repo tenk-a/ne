@@ -34,7 +34,8 @@ int HearderrEnd(char* message)
 
     //  fprintf(stderr,"%s\n",message);
     if (message == NULL)
-        perror(""); else
+        perror("");
+    else
         fprintf(stderr, "%s\n", message);
 
     exit(1);

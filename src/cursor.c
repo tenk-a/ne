@@ -170,7 +170,10 @@ SHELL void op_cursor_sright()
 SHELL void op_cursor_tkprev()
 {
     if (GetBufferOffset() > 0)
-        csr_setlx(kanji_tkprev(csrle.buf, csrle.lx, TRUE)); else
+    {
+        csr_setlx(kanji_tkprev(csrle.buf, csrle.lx, TRUE));
+    }
+    else
     {
         if (GetLineOffset() > 1)
         {
@@ -183,7 +186,10 @@ SHELL void op_cursor_tkprev()
 SHELL void op_cursor_tknext()
 {
     if (GetBufferOffset() < strlen(csrle.buf))
-        csr_setlx(kanji_tknext(csrle.buf, csrle.lx, TRUE)); else
+    {
+        csr_setlx(kanji_tknext(csrle.buf, csrle.lx, TRUE));
+    }
+    else
     {
         if (GetLineOffset() < GetLastNumber())
         {
@@ -196,7 +202,10 @@ SHELL void op_cursor_tknext()
 SHELL void op_cursor_left()
 {
     if (GetBufferOffset() > 0)
-        csr_setlx(GetBufferOffset() - 1); else
+    {
+        csr_setlx(GetBufferOffset() - 1);
+    }
+    else
     {
         if (GetLineOffset() > 1)
         {
@@ -208,9 +217,11 @@ SHELL void op_cursor_left()
 
 SHELL void op_cursor_right()
 {
-    if ( sysinfo.freecursorf ||
-            GetBufferOffset() < strlen(csrle.buf) )
-        csr_setlx(GetBufferOffset() + 1 + (IsKanjiPosition() ? 1 : 0)); else
+    if (sysinfo.freecursorf || GetBufferOffset() < strlen(csrle.buf))
+    {
+        csr_setlx(GetBufferOffset() + 1 + (IsKanjiPosition() ? 1 : 0));
+    }
+    else
     {
         if (GetLineOffset() < GetLastNumber())
         {
@@ -246,14 +257,16 @@ SHELL void op_cursor_bottom()
 SHELL void op_cursor_pup()
 {
     if (edbuf[CurrentFileNo].pm)
-        op_search_prev(); else
+        op_search_prev();
+    else
         csr_setly(GetLineOffset() - (GetRowWidth() - 1));
 }
 
 SHELL void op_cursor_pdown()
 {
     if (edbuf[CurrentFileNo].pm)
-        op_search_next(); else
+        op_search_next();
+    else
         csr_setly(GetLineOffset() + (GetRowWidth() - 1));
 }
 

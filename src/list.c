@@ -143,7 +143,8 @@ void InsertLine(EditLine* bli, EditLine* li)
 void DeleteList(EditLine* li)
 {
     if (li->next != NULL)
-        li->next->prev = li->prev;          else
+        li->next->prev = li->prev;
+    else
         LastLine[CurrentFileNo] = li->prev;
 
     csrse.bytes -= li->bytes;
@@ -195,7 +196,8 @@ EditLine* GetList(long o_number)
     {
         while (p->prev != NULL && off++ < 0)
             p = p->prev;
-    } else
+    }
+    else
     {
         while (p->next != NULL && off-- > 0)
             p = p->next;
@@ -240,7 +242,8 @@ void lists_proc(void func(), void* gp, long n_st, long n_en)
             continue;
         }
         if (ed->next == NULL)
-            strcpy(buf, ed->buffer); else
+            strcpy(buf, ed->buffer);
+        else
             sprintf(buf, "%s\n", ed->buffer);
         func(buf, gp);
         ed = ed->next;

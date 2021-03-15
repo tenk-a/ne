@@ -20,14 +20,15 @@ void block_set(block_t* bp)
     if (bp->blkm == BLKM_none)
         return;
 
-    if ( bbp->y_st > bbp->y_ed ||
-        (bbp->y_st == bbp->y_ed && bbp->x_st > bbp->x_ed) )
+    if (bbp->y_st > bbp->y_ed
+        || (bbp->y_st == bbp->y_ed && bbp->x_st > bbp->x_ed))
     {
         bp->x_st = bbp->x_ed;
         bp->x_ed = bbp->x_st;
         bp->y_st = bbp->y_ed;
         bp->y_ed = bbp->y_st;
-    } else
+    }
+    else
     {
         bp->x_st = bbp->x_st;
         bp->x_ed = bbp->x_ed;
@@ -45,7 +46,8 @@ bool block_range(long n, block_t* bp, int* x_st, int* x_ed)
     {
         if (bp->y_ed == n)
             return FALSE;
-    } else
+    }
+    else
     {
         if (bp->y_st == bp->y_ed)
         {
@@ -79,7 +81,10 @@ void block_cmove()
         return;
 
     if (blck.y_ed != GetLineOffset())
-        blck.blkm = BLKM_y; else
+    {
+        blck.blkm = BLKM_y;
+    }
+    else
     {
         if (blck.x_ed != GetBufferOffset())
             blck.blkm = BLKM_x;
@@ -148,7 +153,8 @@ static bool bstack_copy()
     while (block_range(n, &bkm, &x_st, &x_ed))
     {
         if (ed->next == NULL)
-            strcpy(buf, ed->buffer); else
+            strcpy(buf, ed->buffer);
+        else
             sprintf(buf, "%s\n", ed->buffer);
         buf[x_ed] = '\0';
         strcat(p, buf + x_st);
@@ -166,7 +172,10 @@ static void block_cut()
     char      buf[MAXEDITLINE + 1];
 
     if (bkm.blkm == BLKM_y && bkm.y_st < GetLastNumber())
-        lists_delete(bkm.y_st, bkm.y_ed - 1); else
+    {
+        lists_delete(bkm.y_st, bkm.y_ed - 1);
+    }
+    else
     {
         ed = GetList(bkm.y_st);
         block_range(bkm.y_st, &bkm, &x_st, &x_ed);
@@ -203,7 +212,10 @@ SHELL void op_block_start()
     csr_leupdate();
 
     if (blck.blkm != BLKM_none)
-        BlockInit(); else
+    {
+        BlockInit();
+    }
+    else
     {
         blck.blkm = BLKM_x;
         blck.y_st = GetLineOffset();
@@ -219,13 +231,19 @@ static bool BlockCommand() /* ブロックコマンドの準備用 */
 
     block_set(&bkm);
     if (blck.blkm != BLKM_none)
-        blck.blkm = BLKM_none; else
+    {
+        blck.blkm = BLKM_none;
+    }
+    else
     {
         bkm.y_st = GetLineOffset();
         bkm.y_ed = bkm.y_st + 1;
 
         if (bkm.y_st != GetLastNumber())
-            bkm.blkm = BLKM_y; else
+        {
+            bkm.blkm = BLKM_y;
+        }
+        else
         {
             bkm.blkm = BLKM_x;
             --bkm.y_ed;
@@ -287,7 +305,8 @@ static void bstack_paste()
             ed = ed->next;
         }
         csrse.ed = edn->next;
-    } else
+    }
+    else
     {
         ed = GetList(GetLineOffset());
         strcpy(buf, ed->buffer);
@@ -299,7 +318,8 @@ static void bstack_paste()
         {
             strcat(buf, buf_a);
             Realloc(ed, buf);
-        } else
+        }
+        else
         {
             Realloc(ed, buf);
 

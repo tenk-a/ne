@@ -12,7 +12,12 @@
 
 #define MAX_km  4096
 
-typedef enum    {KM_none,KM_set,KM_do}  kmmode_t;
+typedef enum
+{
+    KM_none,
+    KM_set,
+    KM_do
+} kmmode_t;
 
 typedef struct keylist
 {
@@ -143,7 +148,10 @@ static void km_set(int region, keydef_t* def, int k1, int k2)
 
     n = 0;
     if (km.list == NULL)
-        km.list = list; else
+    {
+        km.list = list;
+    }
+    else
     {
         next = km.list;
         while (next->next != NULL)
@@ -233,10 +241,15 @@ void keydef_report()
     for (i = 0; i < MAX_region; ++i)
     {
         report_printf("#%d\n", i);
-        for (j = 0; j < keydef_n[i]; ++j)
+        for (j = 0; j < keydef_n[i]; ++j) {
             report_printf("%c%3d (%02d): %08x %08x\n"
-                , keydef[i][j].kdm == KDM_func ? ' ' : '*', j
-                , keydef[i][j].funcNo, keydef[i][j].key1, keydef[i][j].key2);
+                , keydef[i][j].kdm == KDM_func ? ' ' : '*'
+                , j
+                , keydef[i][j].funcNo
+                , keydef[i][j].key1
+                , keydef[i][j].key2
+            );
+        }
     }
 }
 
@@ -301,10 +314,12 @@ int get_keyf(int region)
         if (def == NULL)
         {
             if (key1 > 0x100 || (iscntrl(key1) && key1 != '\t' && key1 < 0x80))
-                def = (void*)-1; else
+                def = (void*)-1;
+            else
                 key1 |= KF_normalcode;
         }
-    } else
+    }
+    else
     {
         putDoubleKey(key1);
         if (region == 0)
@@ -358,7 +373,8 @@ int keysel(const char* s, const char* t)
 
     system_msg(s);
 
-    do {
+    do
+    {
         c = term_inkey();
     } while (strchr(t, c) == NULL);
 
@@ -436,7 +452,8 @@ int keyf_getname(const char* s, int n)
         return -1;
 
     if (strncasecmp(s, "op_", 3) == 0)
-        a = 0; else
+        a = 0;
+    else
         a = 3;
 
     for (i = 0; i < MAX_func; ++i)
@@ -462,7 +479,8 @@ void keyf_setarg(keydef_t* kdp, const char* s)
     f = FALSE;
     n = 0;
     p = buf;
-    do {
+    do
+    {
         if (*s == '\"')
         {
             f = !f;
@@ -501,7 +519,10 @@ void keyf_set(int region, const char* k, const char* s)
 
     p = strchr(s, ' ');
     if (p == NULL)
-        n = keyf_getname(s, region); else
+    {
+        n = keyf_getname(s, region);
+    }
+    else
     {
         strjncpy(buf, s, p - s);
         n = keyf_getname(buf, region);
@@ -516,6 +537,7 @@ void keyf_set(int region, const char* k, const char* s)
 
     // ?? 上のif分の中にいれておいてよいのではなかったか?
     if (p != NULL && kdp != NULL && kdp != (keydef_t*)-1)
-        keyf_setarg(kdp, p); else
+        keyf_setarg(kdp, p);
+    else
         kdp->args[0] = NULL;
 }

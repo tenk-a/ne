@@ -38,7 +38,10 @@ void le_setlx(le_t* lep, int lx)
         return;
 
     if (csx <= lep->sx) // スクロール位置より左に
-        lep->sx = (csx - 1) / N_scr * N_scr; else
+    {
+        lep->sx = (csx - 1) / N_scr * N_scr;
+    }
+    else
     {
         if (csx >= lep->sx + lep->dsize - 1) // スクロール位置より右に
             lep->sx = ((csx - lep->dsize) / N_scr + 1) * N_scr;
@@ -80,7 +83,8 @@ void le_edit(le_t* lep, int ch, int cm)
     {
         if (lep->lx > strlength)
             lep->lx = strlength;
-    } else
+    }
+    else
     {
         if (strlength < lep->lx)
         {
@@ -102,7 +106,8 @@ void le_edit(le_t* lep, int ch, int cm)
         {
             p = lep->buf + lep->lx;
             if (IsThisKanjiPosition(lep->lx, lep->buf))
-                memmove(p, p + 2, strlength - lep->lx - 1); else
+                memmove(p, p + 2, strlength - lep->lx - 1);
+            else
                 memmove(p, p + 1, strlength - lep->lx);
         }
         break;
@@ -149,7 +154,8 @@ size_t le_regbuf(const char* s, char* t)
             {
                 t[n++] = '^';
                 t[n++] = *s + '@';
-            } else
+            }
+            else
             {
                 sprintf(t + n, "%02x", *s);
                 n += 2;
@@ -176,10 +182,13 @@ static void legets_hist(le_t* lep, int hn, int hy)
     lep->lx = 0;
     lep->sx = 0;
 
-    if (ed == NULL || ed->buffer == NULL) //buffer
-        *lep->buf = '\0'; else
+    if (ed == NULL || ed->buffer == NULL)   //buffer
     {
-        strcpy(lep->buf, ed->buffer); //buffer
+        *lep->buf = '\0';
+    }
+    else
+    {
+        strcpy(lep->buf, ed->buffer);       //buffer
         le_csrrightside(lep);
     }
 
@@ -362,7 +371,8 @@ int legets_gets(const char* msg, char* s, int dsize, int size, int hn)
             {
                 ch &= ~KF_normalcode;
                 if (iseuc(ch) || ch == 0x8e)
-                    le_edit(&le, ch << 8 | term_inkey(), NONE); else
+                    le_edit(&le, ch << 8 | term_inkey(), NONE);
+                else
                     le_edit(&le, ch, NONE);
             }
             continue;

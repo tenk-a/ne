@@ -172,7 +172,8 @@ int profile_read()
 
                 FileOpenOp(p);
                 csr_setly(jl);
-            } else
+            }
+            else
             {
                 //!! RenameFile(CurrentFileNo, p);
                 strcpy(fn, p);
@@ -180,8 +181,7 @@ int profile_read()
 
                 strcpy(edbuf[CurrentFileNo].path, fn);
                 SetFileChangeFlag();
-                edbuf[CurrentFileNo].ct = stat(p, &sbuf) == -1 ?
-                                             -1 : sbuf.st_ctime;
+                edbuf[CurrentFileNo].ct = stat(p, &sbuf) == -1 ? -1 : sbuf.st_ctime;
 
                 edbuf_rm(CurrentFileNo);
                 edbuf_add(fn);

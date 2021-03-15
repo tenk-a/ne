@@ -168,7 +168,10 @@ void cut_pf(const char* s, char* path, char* file)
     if (path != NULL)
     {
         if (p == s)
-            strcpy(path, "/"); else
+        {
+            strcpy(path, "/");
+        }
+        else
         {
             strncpy(path, s, p - s);
             path[p - s] = '\0';
@@ -201,12 +204,16 @@ void complete_tilde(char* s, const char* t)
         strcpy(s, p != NULL ? p : "");
 
         p = strchr(t, '/');
-    } else
+    }
+    else
     {
         f = FALSE;
         p = strchr(t, '/');
         if (p == NULL)
-            strcpy(buf, t + 1); else
+        {
+            strcpy(buf, t + 1);
+        }
+        else
         {
             strcpy(buf, t + 1);
             memcpy(buf, t + 1, p - t - 1);
@@ -255,7 +262,10 @@ void reg_path(const char* cp, char* s, bool f)
     int   i, j, n;
 
     if (*s != '~')
-        q = s; else
+    {
+        q = s;
+    }
+    else
     {
         complete_tilde(path, s);
         q = path;
@@ -273,7 +283,8 @@ void reg_path(const char* cp, char* s, bool f)
         {
             sprintf(path, "%s/%s", cp, s);
             q = path;
-        } else
+        }
+        else
         {
             sprintf(s, "%s/%s", cp, path);
             q = s;

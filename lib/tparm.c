@@ -64,9 +64,7 @@ static int      argcnt;
 
 static va_list  tparm_args;
 
-static int
-pusharg(arg)
-    int arg; {
+static int pusharg(int arg) {
     if (pos == MAX_PUSHED)
         return 1;
     S[pos].type     = ARG;
@@ -74,9 +72,7 @@ pusharg(arg)
     return 0;
 }
 
-static int
-pushnum(num)
-    int num; {
+static int pushnum(int num) {
     if (pos == MAX_PUSHED)
         return 1;
     S[pos].type    = NUM;
@@ -85,10 +81,7 @@ pushnum(num)
 }
 
 /* VARARGS2 */
-static int
-getarg(argnum, type, p)
-    int     argnum, type;
-    anyptr  p; {
+static int getarg(int argnum, int type, anyptr p) {
     while (argcnt < argnum) {
         arg_list[argcnt].type      = INTEGER;
         arg_list[argcnt++].integer = (int)va_arg(tparm_args, int);
@@ -103,17 +96,14 @@ getarg(argnum, type, p)
     } else {
         arg_list[argcnt].type = type;
         if (type == STRING)
-            *(char**)p = arg_list[argcnt++].string
-                       = (char*)va_arg(tparm_args, char*);
+            *(char**)p = arg_list[argcnt++].string  = (char*)va_arg(tparm_args, char*);
         else
             *(int*)p   = arg_list[argcnt++].integer  = (int)va_arg(tparm_args, int);
     }
     return 0;
 }
 
-static int
-popstring(str)
-        char** str; {
+static int  popstring(char** str) {
     if (pos-- == 0)
         return 1;
     if (S[pos].type != ARG)
@@ -121,9 +111,7 @@ popstring(str)
     return (getarg(S[pos].argnum, STRING, (anyptr)str));
 }
 
-static int
-popnum(num)
-    int*  num; {
+static int popnum(int* num) {
     if (pos-- == 0)
         return 1;
     switch (S[pos].type) {
@@ -136,9 +124,7 @@ popnum(num)
     return 1;
 }
 
-static int
-cvtchar(sp, c)
-    register char *sp, *c; {
+static int cvtchar(register char* sp, register char* c) {
     switch (*sp) {
     case '\\':
         switch (*++sp) {
@@ -162,6 +148,7 @@ cvtchar(sp, c)
             *c = *sp;
             return 2;
         }
+
     default:
         *c = *sp;
         return 1;
@@ -291,9 +278,9 @@ char* tparm(const char* str, ...) {
                     if (scan_for == ';')
                         if_depth--;
                     scan_for = 0;
-                } else if (*sp == '?')
+                } else if (*sp == '?') {
                     if_depth++;
-                else if (*sp == ';') {
+                } else if (*sp == ';') {
                     if (if_depth == 0)
                         return OOPS;
                     else
@@ -317,7 +304,7 @@ char* tparm(const char* str, ...) {
                     sp++;
                     break;
                 }
-                ; /* FALLTHROUGH */
+                /* FALLTHROUGH */
             case 'C':
                 if (*sp == 'C') {
                     if (getarg(termcap - 1, INTEGER, &i))
@@ -338,22 +325,20 @@ char* tparm(const char* str, ...) {
                     return OOPS;
                 if (*++sp == '\0')
                     return OOPS;
-                if ( (sp[1] == 'p' || sp[1] == 'c')
-                   && sp[2] != '\0' && fmt == NULL) {
+                if ((sp[1] == 'p' || sp[1] == 'c') && sp[2] != '\0' && fmt == NULL) {
                     /* GNU aritmitic parameter, what they
                        realy need is terminfo.        */
                     int val, lc;
-                    if (sp[1] == 'p'
-                        && getarg(termcap - 1 + sp[2] - '@',
-                                  INTEGER, (anyptr)&val))
+                    if (sp[1] == 'p' && getarg(termcap - 1 + sp[2] - '@', INTEGER, (anyptr)&val))
                         return OOPS;
                     if (sp[1] == 'c') {
                         lc = cvtchar(sp + 2, &c) + 2;
                         /* Mask out 8th bit so \200 can be
                            used for \0 as per GNU doc's    */
                         val = c & 0177;
-                    } else
+                    } else {
                         lc = 2;
+                    }
                     switch (sp[0]) {
                     case '=':
                         break;
@@ -411,27 +396,39 @@ char* tparm(const char* str, ...) {
                 }
                 if (!termcap)
                     return OOPS;
-                ; /* FALLTHROUGH */
+                /* FALLTHROUGH */
             case '.':
                 if (termcap && fmt == NULL)
                     fmt = "%c";
-                ; /* FALLTHROUGH */
+                /* FALLTHROUGH */
             case 'd':
                 if (termcap && fmt == NULL)
                     fmt = "%d";
-                ; /* FALLTHROUGH */
+                /* FALLTHROUGH */
             case '2':
                 if (termcap && fmt == NULL)
                     fmt = "%02d";
-                ; /* FALLTHROUGH */
+                /* FALLTHROUGH */
             case '3':
                 if (termcap && fmt == NULL)
                     fmt = "%03d";
-                ; /* FALLTHROUGH */
-            case ':': case ' ': case '#': case 'u':
-            case 'x': case 'X': case 'o': case 'c':
-            case '0': case '1': case '4': case '5':
-            case '6': case '7': case '8': case '9':
+                /* FALLTHROUGH */
+            case ':':
+            case ' ':
+            case '#':
+            case 'u':
+            case 'x':
+            case 'X':
+            case 'o':
+            case 'c':
+            case '0':
+            case '1':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
                if (fmt == NULL) {
                     if (termcap)
                         return OOPS;
@@ -455,12 +452,11 @@ char* tparm(const char* str, ...) {
                     sprintf(sbuf, fmt, s);
                 } else {
                     if (termcap) {
-                        if (getarg(termcap++ - 1,
-                                   INTEGER, &i))
+                        if (getarg(termcap++ - 1, INTEGER, &i))
                             return OOPS;
-                    } else
-                        if (popnum(&i))
+                    } else if (popnum(&i)) {
                             return OOPS;
+                    }
                     if (i == 0 && conv_char == 'c')
                         strcpy(sbuf, "\000");
                     else
@@ -482,8 +478,7 @@ char* tparm(const char* str, ...) {
                 sp++;
                 break;
             case 'i':
-                if (getarg(1, INTEGER, &i)
-                    || arg_list[0].type != INTEGER)
+                if (getarg(1, INTEGER, &i) || arg_list[0].type != INTEGER)
                     return OOPS;
                 arg_list[1].integer++;
                 arg_list[0].integer++;
@@ -512,8 +507,9 @@ char* tparm(const char* str, ...) {
                 if (i > c) {
                     sp += cvtchar(sp, &c);
                     arg_list[termcap - 1].integer += c;
-                } else
+                } else {
                     sp += cvtchar(sp, &c);
+                }
                 sp++;
                 break;
             case 'B':

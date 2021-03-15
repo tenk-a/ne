@@ -22,7 +22,10 @@ void se_insert(const char* s, bool f)
     {
         c = *s++;
         if (c < 0xa0 || *(u_char*)s < 0xa0)
-            LeditInput(c, NONE); else
+        {
+            LeditInput(c, NONE);
+        }
+        else
         {
             LeditInput(c << 8 | *(u_char*)s, NONE);
             ++s;
@@ -370,7 +373,10 @@ SHELL void op_jump_line()
     int  n;
 
     if (keyf_numarg() > 0)
-        n = atoi(keyf_getarg(0)); else
+    {
+        n = atoi(keyf_getarg(0));
+    }
+    else
     {
         *buf = '\0';
         if (GetS("π‘»÷πÊ:", buf) == ESCAPE)
@@ -379,8 +385,6 @@ SHELL void op_jump_line()
     }
     lm_mark(GetLineOffset(), 0);
     csr_setly(n);
-
-
 }
 
 static int lm_lines[5] = { 0, 0, 0, 0, 0 };
@@ -447,7 +451,7 @@ void udbuf_init()
     tmpFileno     = CurrentFileNo;
     CurrentFileNo = UNDO_SYSTEM;
     FileStartInit(FALSE);
-    ed = MakeLine("");
+    ed            = MakeLine("");
     AppendLast(ed);
     CurrentFileNo = tmpFileno;
 }
