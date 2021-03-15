@@ -2,357 +2,348 @@
   string search and replace module.
 
     Copyright (c) 1998,1999,2000 SASAKI Shunsuke.
-    All rights reserved. 
+    All rights reserved.
 --------------------------------------------------------------------*/
-#include	"ed.h"
-#include	"../lib/regexp.h"
-#include	<ctype.h>
+#include "ed.h"
+#include "../lib/regexp.h"
+#include <ctype.h>
 
-
-
-static	void	cursor_move(int lx,long ly)	// !!
+static void cursor_move(int lx, long ly) // !!
 {
-	RefreshMessage();
+    RefreshMessage();
 
-	csr_setly(ly);
-	csr_setlx(lx);
+    csr_setly(ly);
+    csr_setlx(lx);
 }
-
 
 // multi search/replace用バッファ
-	char	s_search[MAXEDITLINE+1];	/* search strings */
-	char	s_repl[MAXEDITLINE+1];		/* replace strings */
+char    s_search[MAXEDITLINE + 1];  /* search strings */
+char    s_repl[  MAXEDITLINE + 1];  /* replace strings */
 
 //
-	char	s_get[MAXEDITLINE+1];	/* 文字列取得バッファ */
+char    s_get[   MAXEDITLINE + 1];  /* 文字列取得バッファ */
 
-void	search_init()
+void search_init()
 {
-	*s_search='\0';
-	*s_repl='\0';
+    *s_search = '\0';
+    *s_repl   = '\0';
 
-	*s_get='\0';
+    *s_get    = '\0';
 }
 
-SHELL	void	op_search_getword()
+SHELL void op_search_getword()
 {
-	int 	lx;
+    int lx;
 
-	if (*s_get=='\0')
-		lx=csrle.lx; else
-		lx=csrle.lx+strlen(s_get);
+    if (*s_get == '\0')
+        lx = csrle.lx;                  else
+        lx = csrle.lx + strlen(s_get);
 
-	lx=kanji_tknext(csrle.buf,lx,FALSE)-csrle.lx;
-	if (lx==0)
-		return;
+    lx = kanji_tknext(csrle.buf, lx, FALSE) - csrle.lx;
+    if (lx == 0)
+        return;
 
-	strncpy(s_get, csrle.buf+csrle.lx, lx);
-	s_get[lx]='\0';
+    strncpy(s_get, csrle.buf + csrle.lx, lx);
+    s_get[lx] = '\0';
 
-	system_msg(s_get);
+    system_msg(s_get);
 
-	edbuf[CurrentFileNo].pm=TRUE;
-	strcpy(s_search, s_get);
+    edbuf[CurrentFileNo].pm = TRUE;
+    strcpy(s_search, s_get);
 }
 
-void	search_clrword()
+void search_clrword()
 {
-	*s_get='\0';
+    *s_get = '\0';
 }
 
-
-static	long	search_next(const char *s,int x,long y,regm_t *rmp)
+static long search_next(const char* s, int x, long y, regm_t* rmp)
 {
-	EditLine	*ed;
-	long	n;
+    EditLine* ed;
+    long      n;
 
-	n=GetLastNumber();
-	ed=GetList(y);
-	if (ed!=NULL && ed->buffer!=NULL && x>=strlen(ed->buffer))
-		{
-		 x=0;
-		 ++y;
-		 ed=ed->next;
-		}
+    n  = GetLastNumber();
+    ed = GetList(y);
+    if (ed != NULL && ed->buffer != NULL && x >= strlen(ed->buffer))
+    {
+        x = 0;
+        ++y;
+        ed = ed->next;
+    }
 
-	for (;y<=n;++y)
-		{
-		 if (ed==NULL || ed->buffer==NULL)
-		 	break;
-		 if (regexp_seeknext(ed->buffer, s, x ,rmp, sysinfo.nocasef))
-		 	return y;
-		 ed=ed->next;
-		 x=0;
-		}
-	return -1;
+    for (; y <= n; ++y)
+    {
+        if (ed == NULL || ed->buffer == NULL)
+            break;
+        if (regexp_seeknext(ed->buffer, s, x, rmp, sysinfo.nocasef))
+            return y;
+        ed = ed->next;
+        x  = 0;
+    }
+    return -1;
 }
 
-static	long	search_prev(const char *s,int x,long y,regm_t *rmp)
+static long search_prev(const char* s, int x, long y, regm_t* rmp)
 {
-	EditLine	*ed;
+    EditLine* ed;
 
-	if (x<0)
-		--y;
+    if (x < 0)
+        --y;
 
-	ed=GetList(y);
-	if (ed==NULL || ed->buffer==NULL)
-		return -1;
-	if (x<0)
-		x=strlen(ed->buffer);
+    ed = GetList(y);
+    if (ed == NULL || ed->buffer == NULL)
+        return -1;
+    if (x < 0)
+        x = strlen(ed->buffer);
 
-	for (;y>0;--y)
-		{
-		 if (regexp_seekprev(ed->buffer, s, x, rmp, sysinfo.nocasef))
-		 	return y;
-		 ed=ed->prev;
-		 if (ed==NULL||ed->buffer==NULL)			//buffer
-		 	break;
-		 x=strlen(ed->buffer);						//buffer
-		}
-	return -1;
+    for (; y > 0; --y)
+    {
+        if (regexp_seekprev(ed->buffer, s, x, rmp, sysinfo.nocasef))
+            return y;
+        ed = ed->prev;
+        if (ed == NULL || ed->buffer == NULL) //buffer
+            break;
+        x = strlen(ed->buffer);               //buffer
+    }
+    return -1;
 }
 
-SHELL	void	op_search_in()
+SHELL void op_search_in()
 {
-	char	buf[MAXEDITLINE+1];
+    char buf[MAXEDITLINE + 1];
 
-//	crt_ledraw();
-	*buf='\0';
-	if (HisGets(buf,GETS_FIND_MSG,SEARCHS_SYSTEM)==NULL 
-			|| *buf=='\0')
-		{
-		 edbuf[CurrentFileNo].pm=FALSE;
-		 *s_search='\0';
-		}else
-		{
-		 lm_mark(GetLineOffset(), 0);
-		 edbuf[CurrentFileNo].pm=TRUE;
-		 strcpy(s_search,buf);
-		}
+    // crt_ledraw();
+    *buf = '\0';
+    if (HisGets(buf, GETS_FIND_MSG, SEARCHS_SYSTEM) == NULL
+        || *buf == '\0')
+    {
+        edbuf[CurrentFileNo].pm = FALSE;
+        *s_search               = '\0';
+    } else
+    {
+        lm_mark(GetLineOffset(), 0);
+        edbuf[CurrentFileNo].pm = TRUE;
+        strcpy(s_search, buf);
+    }
 
-//	system_guide();
+    // system_guide();
 }
 
-SHELL	void	op_search_prev()
+SHELL void op_search_prev()
 {
-	regm_t	rm;
-	long	y;
+    regm_t rm;
+    long   y;
 
-	if (*s_search=='\0')
-		{
-		 op_search_in();
-		 if (*s_search=='\0')
-		 	return;
-		}
+    if (*s_search == '\0')
+    {
+        op_search_in();
+        if (*s_search == '\0')
+            return;
+    }
 
-	csr_leupdate();
-	system_msg(SEARCHING_MSG);
+    csr_leupdate();
+    system_msg(SEARCHING_MSG);
 
-	y=search_prev(s_search, 
-					GetBufferOffset()-1, GetLineOffset(), &rm);
+    y = search_prev(s_search,
+                    GetBufferOffset() - 1, GetLineOffset(), &rm);
 
-//	crt_ledraw();
-	if (y==-1)
-		system_msg(NOT_FOUND_MSG); else
-		cursor_move(rm.rm_so,y);
+    // crt_ledraw();
+    if (y == -1)
+        system_msg(NOT_FOUND_MSG); else
+        cursor_move(rm.rm_so, y);
 }
 
-SHELL	void	op_search_next()
+SHELL void op_search_next()
 {
-	regm_t	rm;
-	long	y;
+    regm_t rm;
+    long   y;
 
-	if (*s_search=='\0')
-		{
-		 op_search_in();
-		 if (*s_search=='\0')
-		 	return;
-		}
+    if (*s_search == '\0')
+    {
+        op_search_in();
+        if (*s_search == '\0')
+            return;
+    }
 
-	csr_leupdate();
-	system_msg(SEARCHING_MSG);
-	y=search_next(s_search, 
-					GetBufferOffset()+1, GetLineOffset(), &rm);
-//	crt_ledraw();
+    csr_leupdate();
+    system_msg(SEARCHING_MSG);
+    y = search_next(s_search,
+                    GetBufferOffset() + 1, GetLineOffset(), &rm);
+    // crt_ledraw();
 
-	if (y==-1)
-		system_msg(NOT_FOUND_MSG); else
-		cursor_move(rm.rm_so,y);
+    if (y == -1)
+        system_msg(NOT_FOUND_MSG);  else
+        cursor_move(rm.rm_so, y);
 }
 
-static	void	replace()
+static void replace()
 {
-	regm_t	rm;
-	long	y,my;
-	int 	x,mx;
-	int 	chgNo;
-	char	buf[MAXLINESTR+1];
-	bool	rf;
+    regm_t      rm;
+    long        y, my;
+    int         x, mx;
+    int         chgNo;
+    char        buf[MAXLINESTR + 1];
+    bool        rf;
 
-	int 	cx,sx,lx,cy;
-	long	ly;
-	EditLine	*ed;
+    int         cx, sx, lx, cy;
+    long        ly;
+    EditLine*   ed;
 
-	csr_leupdate();
+    csr_leupdate();
 
-	cx=csrle.cx;
-	sx=csrle.sx;
-	lx=csrle.lx;
-	cy=csrse.cy;
-	ly=csrse.ly;
-	ed=csrse.ed;
+    cx = csrle.cx;
+    sx = csrle.sx;
+    lx = csrle.lx;
+    cy = csrse.cy;
+    ly = csrse.ly;
+    ed = csrse.ed;
 
-	chgNo=0;
-	mx=0;
-	my=0;
-	switch(edbuf[CurrentFileNo].replm)
-		{
-	 case REPLM_before:
-	 	 mx=lx;
-	 	 my=ly;
-	 case REPLM_all:
-	 default:
-	 	 x=0;
-	 	 y=1;
-	 	 break;
-	 case REPLM_after:
-	 	 x=lx;
-	 	 y=ly;
-	 	 break;
-/*	 case REPLM_block:
-		 x=1;
-		 y=GetBlockStart();
-		 my=GetBlockEnd();*/
-		}
+    chgNo = 0;
+    mx    = 0;
+    my    = 0;
+    switch (edbuf[CurrentFileNo].replm)
+    {
+    case REPLM_before:
+        mx = lx;
+        my = ly;
+    case REPLM_all:
+    default:
+        x = 0;
+        y = 1;
+        break;
+    case REPLM_after:
+        x = lx;
+        y = ly;
+        break;
+    /* case REPLM_block:
+         x=1;
+         y=GetBlockStart();
+         my=GetBlockEnd(); */
+    }
 
-	rf=FALSE;
-	for (;;)
-		{
-		 system_msg(SEARCHING_MSG);
-		 y=search_next(s_search, x, y, &rm);
+    rf = FALSE;
+    for (;;)
+    {
+        system_msg(SEARCHING_MSG);
+        y = search_next(s_search, x, y, &rm);
 
-		 if (y==-1)
-		 	break;
+        if (y == -1)
+            break;
 
-		 x=rm.rm_so;
-		 if (my!=0&& (y>my|| (y==my&& mx!=0&& x>mx)))
-		 	break;
+        x = rm.rm_so;
+        if (my != 0 && (y > my || (y == my && mx != 0 && x > mx)))
+            break;
 
-		 cursor_move(x,y);
+        cursor_move(x, y);
 
-		 if (!rf)
-		 	{
-		 	 char	c;
-		 	 char	buf2[LN_dspbuf+1];
+        if (!rf)
+        {
+            char c;
+            char buf2[LN_dspbuf + 1];
 
-		 	 CrtDrawAll();
-		 	 term_locate(GetRow(), GetCol()+NumWidth);
+            CrtDrawAll();
+            term_locate(GetRow(), GetCol() + NumWidth);
 
-		 	 term_color(sysinfo.c_search);
-		 	 memcpy(buf2, GetList(y)->buffer+rm.rm_so, rm.rm_eo-rm.rm_so);
-		 	 buf2[rm.rm_eo-rm.rm_so]='\0';
-		 	 term_puts(buf2);
+            term_color(sysinfo.c_search);
+            memcpy(buf2, GetList(y)->buffer + rm.rm_so, rm.rm_eo - rm.rm_so);
+            buf2[rm.rm_eo - rm.rm_so] = '\0';
+            term_puts(buf2);
 
-		 	 c=keysel("置換しますか? (Y/N/A) :","Yy\r\nNnAa \x1b");
-		 	 if (c=='\x1b')
-		 	 	break;
-		 	 if (c=='n'||c==' ')
-		 	 	{
-		 	 	 ++x;
-		 	 	 continue;
-		 	 	}
-		 	 if (c=='a')
-		 	 	rf=TRUE;
-		 	}
+            c = keysel("置換しますか? (Y/N/A) :", "Yy\r\nNnAa \x1b");
+            if (c == '\x1b')
+                break;
+            if (c == 'n' || c == ' ')
+            {
+                ++x;
+                continue;
+            }
+            if (c == 'a')
+                rf = TRUE;
+        }
 
-		 csr_lenew();
+        csr_lenew();
 
-		 se_delete(rm.rm_eo-x, TRUE);
-		 se_insert(s_repl,FALSE);
-		 x+=strlen(s_repl);
+        se_delete(rm.rm_eo - x, TRUE);
+        se_insert(s_repl, FALSE);
+        x += strlen(s_repl);
 
-		 csr_leupdate();
+        csr_leupdate();
 
-		 ++chgNo;
-		}
-// 変換を開始した時のカーソル位置に戻す。
-	csrle.cx=cx;
-	csrle.sx=sx;
-	csrle.lx=lx;
-	csrse.cy=cy;
-	csrse.ly=ly;
-	csrse.ed=ed;
-	csr_fix();
-	csr_lenew();
+        ++chgNo;
+    }
+    // 変換を開始した時のカーソル位置に戻す。
+    csrle.cx = cx;
+    csrle.sx = sx;
+    csrle.lx = lx;
+    csrse.cy = cy;
+    csrse.ly = ly;
+    csrse.ed = ed;
+    csr_fix();
+    csr_lenew();
 
-	sprintf(buf, "[ %.30s -> %-.30s ] %d %s..."
-		, s_search, s_repl, chgNo, REPLACED_MSG);
-	system_msg(buf);
-
+    sprintf(buf, "[ %.30s -> %-.30s ] %d %s..."
+        , s_search, s_repl, chgNo, REPLACED_MSG);
+    system_msg(buf);
 }
 
-
-
-
-SHELL	void	op_search_paging()
+SHELL void op_search_paging()
 {
-	edbuf[CurrentFileNo].pm= edbuf[CurrentFileNo].pm?FALSE:TRUE;
-//	system_guide();
+    edbuf[CurrentFileNo].pm = edbuf[CurrentFileNo].pm ? FALSE : TRUE;
+    //  system_guide();
 }
 
-SHELL	void	op_search_repl_redo()
+SHELL void op_search_repl_redo()
 {
-	if (*s_search=='\0'||*s_repl=='\0')
-		return;
-	edbuf[CurrentFileNo].replm=REPLM_all;
-	replace();
+    if (*s_search == '\0' || *s_repl == '\0')
+        return;
+    edbuf[CurrentFileNo].replm = REPLM_all;
+    replace();
 }
 
-SHELL	void	op_search_repl()
+SHELL void op_search_repl()
 {
-	int 	res;
-	int 	nums;
+    int res;
+    int nums;
 
-	csr_leupdate();
-//	crt_ledraw();
+    csr_leupdate();
+    //  crt_ledraw();
 
-//	nums=blck_ismode()?4:3;
-	nums=3;
-	res=menu_vselect(GetCol(), GetRow(), nums, REPLACE_ALL_MSG
-		, REPLACE_FORWARD_MSG, REPLACE_BACK_MSG, REPLACE_INSIDEBLOCK_MSG);
+    //  nums=blck_ismode()?4:3;
+    nums = 3;
+    res  = menu_vselect(GetCol(), GetRow(), nums, REPLACE_ALL_MSG
+                        , REPLACE_FORWARD_MSG, REPLACE_BACK_MSG, REPLACE_INSIDEBLOCK_MSG );
 
-	switch(res) {
-	case -1:
-		return;
-	case 0:
-		edbuf[CurrentFileNo].replm=REPLM_all;
-		break;
-	case 1:
-		edbuf[CurrentFileNo].replm=REPLM_after;
-		break;
-	case 2:
-		edbuf[CurrentFileNo].replm=REPLM_before;
-		break;
-	case 3:
-		edbuf[CurrentFileNo].replm=REPLM_block;
-		break;
-	}
+    switch (res) {
+    case -1:
+        return;
+    case 0:
+        edbuf[CurrentFileNo].replm = REPLM_all;
+        break;
+    case 1:
+        edbuf[CurrentFileNo].replm = REPLM_after;
+        break;
+    case 2:
+        edbuf[CurrentFileNo].replm = REPLM_before;
+        break;
+    case 3:
+        edbuf[CurrentFileNo].replm = REPLM_block;
+        break;
+    }
 
-	CrtDrawAll();
-	*s_search='\0';
-	if (HisGets(s_search, GETS_FIND_MSG, SEARCHS_SYSTEM) == NULL) 
-		{
-//		 crt_ledraw();
-		 return;
-		}
-	*s_repl='\0';
-	if (HisGets(s_repl, GETS_REPLACE_MSG, SEARCHS_SYSTEM) == NULL) 
-		{
-//		 crt_ledraw();
-		 return;
-		}
+    CrtDrawAll();
+    *s_search = '\0';
+    if (HisGets(s_search, GETS_FIND_MSG, SEARCHS_SYSTEM) == NULL)
+    {
+        // crt_ledraw();
+        return;
+    }
+    *s_repl = '\0';
+    if (HisGets(s_repl, GETS_REPLACE_MSG, SEARCHS_SYSTEM) == NULL)
+    {
+        // crt_ledraw();
+        return;
+    }
 
-	replace();
-//	crt_ledraw();
+    replace();
+    // crt_ledraw();
 }
-

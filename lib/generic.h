@@ -2,7 +2,7 @@
  *    generic module.
  *
  * Copyright (c) 1998, 1999, 2000 SASAKI Shunsuke.
- * All rights reserved. 
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,8 +13,8 @@
  * 2. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *
- * Where this Software is combined with software released under the terms of 
- * the GNU Public License ("GPL") and the terms of the GPL would require the 
+ * Where this Software is combined with software released under the terms of
+ * the GNU Public License ("GPL") and the terms of the GPL would require the
  * combined work to also be released under the terms of the GPL, the terms
  * and conditions of this License will apply in addition to those of the
  * GPL with the exception of any terms or conditions of this License that
@@ -39,58 +39,53 @@
 #include "config.h"
 #include <stddef.h>
 
-typedef	int	bool;
+typedef int     bool;
 
-#ifndef	FALSE
-#	define	FALSE	0
-#	define	TRUE	!FALSE
+#ifndef FALSE
+ #define FALSE  0
+ #define TRUE   !FALSE
 #endif
 
 #ifndef max
-#	define	max(x,y)	(x>y?x:y)
-#	define	min(x,y)	(x<y?x:y)
+ #define max(x, y)  (x > y ? x : y)
+ #define min(x, y)  (x < y ? x : y)
 #endif
 
+extern void*    mem_alloc(size_t n);
+extern void*    mem_realloc(void* p, size_t n);
 
+extern void*    mem_alloca(size_t n);
+extern void     mem_alloca_gc();
 
-extern	void	*mem_alloc(size_t n);
-extern	void	*mem_realloc(void *p, size_t n);
+extern char*    mem_strdup(const char* s);
+extern char*    mem_strdupa(const char* s);
 
-extern	void	*mem_alloca(size_t n);
-extern	void	mem_alloca_gc();
+extern void     reg_pf(const char* cp, char* s, bool f);
+extern void     reg_path(const char* cp, char* s, bool f);
+extern void     cut_pf(const char* s, char* path, char* file);
 
-extern	char	*mem_strdup(const char *s);
-extern	char	*mem_strdupa(const char *s);
+extern char*    dir_pext(const char* s);
+extern char**   dir_glob(const char* s, bool f_dotfile);
+extern bool     dir_isdir(const char* s);
 
-extern	void	reg_pf(const char *cp, char *s,bool f);
-extern	void	reg_path(const char *cp, char *s,bool f);
-extern	void	cut_pf(const char *s,char *path,char *file);
+extern void     strjncpy(char* s, const char* t, size_t ln);
+extern bool     mole_dir(const char* s);
+// extern int   touchfile(const char *path, time_t atime, time_t mtime);
 
-extern	char	*dir_pext(const char *s);
-extern	char	**dir_glob(const char *s, bool f_dotfile);
-extern	bool	dir_isdir(const char *s);
+extern bool     kanji_chk(const char* s, const char* t);
 
-extern	void	strjncpy(char *s,const char *t,size_t ln);
-extern	bool	mole_dir(const char* s);
-// extern	int 	touchfile(const char *path, time_t atime, time_t mtime);
+extern void     error(const char* s);
 
-extern	bool	kanji_chk(const char *s,const char *t);
+extern void     report_set(FILE* fp);
+extern void     report_printf(const char* fmt, ...);
+extern void     report_puts(const char* s);
 
-
-extern	void	error(const char *s);
-
-extern	void	report_set(FILE *fp);
-extern	void	report_printf(const char *fmt, ...);
-extern	void	report_puts(const char *s);
-
-#ifdef	NDEBUG
-#	define	report_assert(exp)
+#ifdef NDEBUG
+#define report_assert(exp)
 #else
-#	define	report_assert(exp)\
-	if (!exp)\
-		report_printf(__FILE__ ":%d: " #exp " falied.\n", __LINE__)
+#define report_assert(exp)                                          \
+    if (!exp)                                                       \
+        report_printf(__FILE__ ":%d: " #exp " falied.\n", __LINE__)
 #endif
-
-
 
 #endif

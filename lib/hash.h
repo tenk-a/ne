@@ -2,7 +2,7 @@
  *    hash module.
  *
  * Copyright (c) 1999, 2000 SASAKI Shunsuke.
- * All rights reserved. 
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,8 +13,8 @@
  * 2. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *
- * Where this Software is combined with software released under the terms of 
- * the GNU Public License ("GPL") and the terms of the GPL would require the 
+ * Where this Software is combined with software released under the terms of
+ * the GNU Public License ("GPL") and the terms of the GPL would require the
  * combined work to also be released under the terms of the GPL, the terms
  * and conditions of this License will apply in addition to those of the
  * GPL with the exception of any terms or conditions of this License that
@@ -36,32 +36,31 @@
 #ifndef __ELE_G_VAL_H__
 #define __ELE_G_VAL_H__
 
+/* ¡ù hash */
 
-	/* ¡ù hash */
+#define LN_key  32
+#define LN_val  256
 
-#define	LN_key	32
-#define	LN_val	256
-
-typedef	struct
+typedef struct
 {
-	char	key[LN_key+1];
-	char	val[LN_val+1];
-}	hash_item_t;
+    char        key[LN_key + 1];
+    char        val[LN_val + 1];
+} hash_item_t;
 
-typedef	struct
+typedef struct
 {
-	hash_item_t	*item;
-	int 		num;
-	int 		max;
-}	hash_t;
+    hash_item_t* item;
+    int          num;
+    int          max;
+} hash_t;
 
-extern	hash_t	*hash_init(hash_t *gvp,int m);
-extern	void	hash_fin(hash_t *gvp);
-extern	char	*hash_get(hash_t *gvp, const char *ks);
-extern	void	hash_set(hash_t *gvp, const char *ks,const char *vs);
-extern	void	hash_defset(hash_t *gvp, const char *ks, const char *vs);
-extern	bool	hash_istrue(hash_t *gvp, const char *ks);
-extern	void	hash_report(hash_t *gvp);
-extern	void	hash_sort(hash_t *gvp);
+extern hash_t* hash_init(hash_t* gvp, int m);
+extern void    hash_fin(hash_t* gvp);
+extern char*   hash_get(hash_t* gvp, const char* ks);
+extern void    hash_set(hash_t* gvp, const char* ks, const char* vs);
+extern void    hash_defset(hash_t* gvp, const char* ks, const char* vs);
+extern bool    hash_istrue(hash_t* gvp, const char* ks);
+extern void    hash_report(hash_t* gvp);
+extern void    hash_sort(hash_t* gvp);
 
 #endif

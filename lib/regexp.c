@@ -2,7 +2,7 @@
  *    regular expression module.
  *
  * Copyright (c) 1999, 2000 SASAKI Shunsuke.
- * All rights reserved. 
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,8 +13,8 @@
  * 2. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *
- * Where this Software is combined with software released under the terms of 
- * the GNU Public License ("GPL") and the terms of the GPL would require the 
+ * Where this Software is combined with software released under the terms of
+ * the GNU Public License ("GPL") and the terms of the GPL would require the
  * combined work to also be released under the terms of the GPL, the terms
  * and conditions of this License will apply in addition to those of the
  * GPL with the exception of any terms or conditions of this License that
@@ -33,99 +33,96 @@
  * SUCH DAMAGE.
  */
 
-#include	"config.h"
+#include "config.h"
 
-#include	<stdio.h>
-#include	<string.h>
-#include	<sys/types.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
 
-#include	"generic.h"
-#include	"regexp.h"
-
+#include "generic.h"
+#include "regexp.h"
 
 /* ¸¡º÷ */
 
-#ifdef	HAVE_REGCOMP
-bool	regexp_exec(const char *s, int x, const char *t,regm_t *rmp, bool f)
+#ifdef HAVE_REGCOMP
+bool regexp_exec(const char* s, int x, const char* t, regm_t* rmp, bool f)
 {
-	static	char	regexp_str[1024+1]={""};
-	static	bool	regexp_casef;
-	static	regex_t	regexp_exp;
+    static char    regexp_str[1024 + 1] = { "" };
+    static bool    regexp_casef;
+    static regex_t regexp_exp;
 
-	int 	a;
+    int a;
 
-	if (strcmp(t, regexp_str)!=0 || f!=regexp_casef)
-		{
-		 if (*regexp_str!='\0')
-		 	regfree(&regexp_exp);
-		 a= f? REG_EXTENDED | REG_ICASE : REG_EXTENDED;
-		 if (regcomp(&regexp_exp, t, a)!=0)
-		 	return FALSE;
-		 strcpy(regexp_str, t);
-		 regexp_casef=f;
-		}
+    if (strcmp(t, regexp_str) != 0 || f != regexp_casef)
+    {
+        if (*regexp_str != '\0')
+            regfree(&regexp_exp);
+        a = f ? REG_EXTENDED | REG_ICASE : REG_EXTENDED;
+        if (regcomp(&regexp_exp, t, a) != 0)
+            return FALSE;
+        strcpy(regexp_str, t);
+        regexp_casef = f;
+    }
 
-/*
-	rmp->rm_so=x;
-	rmp->rm_eo=strlen(s);
+    /*
+    rmp->rm_so=x;
+    rmp->rm_eo=strlen(s);
 
-	a= x==0 ? REG_STARTEND : REG_NOTBOL | REG_STARTEND;
-	return regexec(&regexp_exp, s, 1, rmp, a)==0 && rmp->rm_so!=-1;
+    a= x==0 ? REG_STARTEND : REG_NOTBOL | REG_STARTEND;
+    return regexec(&regexp_exp, s, 1, rmp, a)==0 && rmp->rm_so!=-1;
 */
 
-	a= x==0 ? 0 : REG_NOTBOL;
-	if (regexec(&regexp_exp, s+x, 1, rmp, a)!=0 || rmp->rm_so==-1)
-		return FALSE;
-	rmp->rm_so+=x;
-	rmp->rm_eo+=x;
-	return TRUE;
+    a = x == 0 ? 0 : REG_NOTBOL;
+    if (regexec(&regexp_exp, s + x, 1, rmp, a) != 0 || rmp->rm_so == -1)
+        return FALSE;
+    rmp->rm_so += x;
+    rmp->rm_eo += x;
+    return TRUE;
 }
 
 #else
 
-bool	regexp_exec(const char *s, int x, const char *t,regm_t *rmp, bool f)
+bool regexp_exec(const char* s, int x, const char* t, regm_t* rmp, bool f)
 {
-	const char	*p;
+    const char* p;
 
-	p=strstr(s+x,t);
-	if (p==NULL)
-		return FALSE;
-	rmp->rm_so=p-s;
-	rmp->rm_eo=strlen(t) - rmp->rm_so;
-	return TRUE;
+    p = strstr(s + x, t);
+    if (p == NULL)
+        return FALSE;
+    rmp->rm_so = p - s;
+    rmp->rm_eo = strlen(t) - rmp->rm_so;
+    return TRUE;
 }
 #endif
 
-
-bool	regexp_seeknext(const char *s,const char *t,int x,regm_t *rmp, bool f)
+bool regexp_seeknext(const char* s, const char* t, int x, regm_t* rmp, bool f)
 {
-	return *t!='\0' && regexp_exec(s, x, t, rmp, f);
+    return *t != '\0' && regexp_exec(s, x, t, rmp, f);
 }
 
-bool	regexp_seekprev(const char *s,const char *t,int x,regm_t *rmp, bool f)
+bool regexp_seekprev(const char* s, const char* t, int x, regm_t* rmp, bool f)
 {
-	regm_t	rm;
+    regm_t rm;
 
-	if (x<0)
-		return FALSE;
-	if (x>strlen(s))
-		x=strlen(s);
+    if (x < 0)
+        return FALSE;
+    if (x > strlen(s))
+        x = strlen(s);
 
-	rmp->rm_so=-1;
-	rm.rm_so=0;
-	for(;;)
-		{
-		 if (!regexp_exec(s, rm.rm_so, t, &rm, f))
-		 	break;
+    rmp->rm_so = -1;
+    rm.rm_so   = 0;
+    for (;;)
+    {
+        if (!regexp_exec(s, rm.rm_so, t, &rm, f))
+            break;
 
-		 if (rm.rm_so>x)
-		 	break;
-		 rmp->rm_so=rm.rm_so;
-		 rmp->rm_eo=rm.rm_eo;
-		 if (rm.rm_so==x)
-		 	return TRUE;
-		 ++rm.rm_so;
-		}
-	return rmp->rm_so!=-1;
+        if (rm.rm_so > x)
+            break;
+        rmp->rm_so = rm.rm_so;
+        rmp->rm_eo = rm.rm_eo;
+        if (rm.rm_so == x)
+            return TRUE;
+        ++rm.rm_so;
+    }
+    return rmp->rm_so != -1;
 }
-

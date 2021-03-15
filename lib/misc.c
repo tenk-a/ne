@@ -2,7 +2,7 @@
  *    misc module.
  *
  * Copyright (c) 1999, 2000 SASAKI Shunsuke.
- * All rights reserved. 
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,8 +13,8 @@
  * 2. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *
- * Where this Software is combined with software released under the terms of 
- * the GNU Public License ("GPL") and the terms of the GPL would require the 
+ * Where this Software is combined with software released under the terms of
+ * the GNU Public License ("GPL") and the terms of the GPL would require the
  * combined work to also be released under the terms of the GPL, the terms
  * and conditions of this License will apply in addition to those of the
  * GPL with the exception of any terms or conditions of this License that
@@ -32,120 +32,118 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include	"config.h"
+#include "config.h"
 
-#include	<stdio.h>
-#include	<string.h>
-#include	<sys/types.h>
-#include	<sys/stat.h>
-#include	<utime.h>
-#include	<unistd.h>
-#include	<fcntl.h>
-#include	"generic.h"
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <utime.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include "generic.h"
 
-#define	iseuc(c)	( (u_char)(c)>=0xa1 &&(u_char)(c)<=0xfe )
-//	|| c==0x8e;
+#define iseuc(c) ((u_char)(c) >= 0xa1 && (u_char)(c) <= 0xfe)
+//  || c==0x8e;
 
+/* ¡ù misc */
 
-  /* ¡ù misc */
-
-void	strjncpy(char *s,const char *t,size_t ln)
+void strjncpy(char* s, const char* t, size_t ln)
 {
-	int 	i;
-	bool	kf;
-	char	*p;
+    int   i;
+    bool  kf;
+    char* p;
 
-	p=s;
-	if (strlen(t)<=ln)
-		{
-		 strcpy(p,t);
-		 return;
-		}
+    p = s;
+    if (strlen(t) <= ln)
+    {
+        strcpy(p, t);
+        return;
+    }
 
-	kf=FALSE;
-	for (i=0;i<ln-1;++i,++p,++t)
-	{
-		*p=*t;
-		if (kf)
-			kf=FALSE; else
-			kf=iseuc(*p);
-	}
+    kf = FALSE;
+    for (i = 0; i < ln - 1; ++i, ++p, ++t)
+    {
+        *p = *t;
+        if (kf)
+            kf = FALSE; else
+            kf = iseuc(*p);
+    }
 
-	if (kf|| !iseuc(*t))
-		*p++=*t;
-	*p='\0';
+    if (kf || !iseuc(*t))
+        *p++ = *t;
+    *p = '\0';
 }
 
-int 	touchfile(const char *path, time_t atime, time_t mtime)
+int touchfile(const char* path, time_t atime, time_t mtime)
 {
-	struct utimbuf times;
+    struct utimbuf times;
 
-	times.actime = atime;
-	times.modtime = mtime;
-	return utime(path, &times);
+    times.actime  = atime;
+    times.modtime = mtime;
+    return utime(path, &times);
 
-/*
-	struct timeval tvp[2];
+    /*
+    struct timeval tvp[2];
 
-	tvp[0].tv_sec = atime;
-	tvp[0].tv_usec = 0;
-	tvp[1].tv_sec = mtime;
-	tvp[1].tv_usec = 0;
-	return utimes(path, tvp);
-*/
+    tvp[0].tv_sec = atime;
+    tvp[0].tv_usec = 0;
+    tvp[1].tv_sec = mtime;
+    tvp[1].tv_usec = 0;
+    return utimes(path, tvp);
+    */
 }
 
-bool	mole_dir(const char* s)
+bool mole_dir(const char* s)
 {
-	const	char	*p;
-	char	buf[1024+1];	// !! buf size
-	struct	stat	st;
+    const char* p;
+    char        buf[1024 + 1]; // !! buf size
+    struct stat st;
 
-	p=s;
-	if (*p=='/')
-		++p;
+    p = s;
+    if (*p == '/')
+        ++p;
 
-	for(;;)
-		{
-		 if (*p=='\0'||p==NULL)
-		 	return TRUE;
-		 p=strchr(p,'/');
-		 if (p==NULL)
-		 	strcpy(buf,s); else
-		 	{
-		 	 memcpy(buf,s,p-s);
-		 	 buf[p-s]='\0';
-		 	 ++p;
-		 	}
-//fprintf(stderr,"mole_chk[%s]\n",buf);
-		 if (stat(buf,&st)==0)
-		 	{
-		 	 if ((st.st_mode&S_IFMT)==S_IFDIR)
-		 	 	continue;
-		 	 return FALSE;
-		 	}
-		 if (mkdir(buf,0777)<0)
-		 	return FALSE;
-		}
-	return TRUE;
+    for (;;)
+    {
+        if (*p == '\0' || p == NULL)
+            return TRUE;
+        p = strchr(p, '/');
+        if (p == NULL)
+            strcpy(buf, s); else
+        {
+            memcpy(buf, s, p - s);
+            buf[p - s] = '\0';
+            ++p;
+        }
+        //fprintf(stderr,"mole_chk[%s]\n",buf);
+        if (stat(buf, &st) == 0)
+        {
+            if ((st.st_mode & S_IFMT) == S_IFDIR)
+                continue;
+            return FALSE;
+        }
+        if (mkdir(buf, 0777) < 0)
+            return FALSE;
+    }
+    return TRUE;
 }
 
-
-bool	kanji_chk(const char *s,const char *t)
+bool kanji_chk(const char* s, const char* t)
 {
-	int 	r=0;
+    int r = 0;
 
-//fprintf(stderr, "%2d[%s]", (int)t-(int)s, s);
+    //fprintf(stderr, "%2d[%s]", (int)t-(int)s, s);
 
-	--t;
-	while(iseuc(*t) && s<=t)
-		{
-		 ++r;
-		 --t;
-		}
+    --t;
+    while (iseuc(*t) && s <= t)
+    {
+        ++r;
+        --t;
+    }
 
-//fprintf(stderr, "%d\n", r);
-	return (r%2)==1;
+    //fprintf(stderr, "%d\n", r);
+    return (r % 2) == 1;
 }
 
 /*
@@ -154,80 +152,77 @@ bool	kanji_chk(const char *s,const char *t)
 
 */
 
-#ifndef	HAVE_FLOCK
+#ifndef HAVE_FLOCK
 
-#	ifndef	F_WRLCK
-int 	flock(int fd, int op)
+#ifndef F_WRLCK
+int flock(int fd, int op)
 {
-	return 0;
+    return 0;
 }
 
 #else
 
-#ifndef	LOCK_SH
-#define	LOCK_SH	1
-#define	LOCK_EX	2
-#define	LOCK_NB	4
-#define	LOCK_UN	8
+#ifndef LOCK_SH
+#define LOCK_SH     1
+#define LOCK_EX     2
+#define LOCK_NB     4
+#define LOCK_UN     8
 #endif
 
-int 	flock(int fd, int op)
+int flock(int fd, int op)
 {
-	struct	flock	fl;
-	int 	cmd;
+    struct flock fl;
+    int          cmd;
 
-	fl.l_start=0;
-	fl.l_len=0;
-	fl.l_whence=SEEK_SET;
+    fl.l_start  = 0;
+    fl.l_len    = 0;
+    fl.l_whence = SEEK_SET;
 
-	if (op&LOCK_EX)
-		fl.l_type=F_WRLCK;
-	if (op&LOCK_SH)
-		fl.l_type=F_RDLCK;
-	if (op&LOCK_UN)
-		fl.l_type=F_UNLCK;
+    if (op & LOCK_EX)
+        fl.l_type = F_WRLCK;
+    if (op & LOCK_SH)
+        fl.l_type = F_RDLCK;
+    if (op & LOCK_UN)
+        fl.l_type = F_UNLCK;
 
-	cmd= (op&LOCK_NB)? F_SETLK : F_SETLKW;
-	return fcntl(fd, cmd, &fl);
-}
-
-#	endif
-
-#endif
-
-
-#ifndef	HAVE_STRSEP
-char	*strsep(char **stringp, const char *delim)
-{
-	char	*p;
-
-	p=*stringp;
-
-	if (p==NULL)
-		return p;
-
-	while (**stringp !='\0')
-		{
-		 if (strchr(delim, **stringp)!=NULL)
-		 	{
-		 	 **stringp = '\0';
-		 	 ++*stringp;
-		 	 return p;
-		 	}
-		 ++*stringp;
-		}
-	*stringp=NULL;
-	return p;
+    cmd = (op & LOCK_NB) ? F_SETLK : F_SETLKW;
+    return fcntl(fd, cmd, &fl);
 }
 
 #endif
 
-
-#ifndef	HAVE_REALPATH
-void	realpath(const char *cp, char *s)
-{
-	strcpy(s, cp);
-	reg_pf(NULL, s, TRUE);
-}
 #endif
 
+#ifndef HAVE_STRSEP
+char* strsep(char** stringp, const char* delim)
+{
+    char* p;
+
+    p = *stringp;
+
+    if (p == NULL)
+        return p;
+
+    while (**stringp != '\0')
+    {
+        if (strchr(delim, **stringp) != NULL)
+        {
+            **stringp = '\0';
+            ++*stringp;
+            return p;
+        }
+        ++*stringp;
+    }
+    *stringp = NULL;
+    return p;
+}
+
+#endif
+
+#ifndef HAVE_REALPATH
+void realpath(const char* cp, char* s)
+{
+    strcpy(s, cp);
+    reg_pf(NULL, s, TRUE);
+}
+#endif

@@ -2,7 +2,7 @@
  *    regular expression module.
  *
  * Copyright (c) 1999, 2000 SASAKI Shunsuke.
- * All rights reserved. 
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -13,8 +13,8 @@
  * 2. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *
- * Where this Software is combined with software released under the terms of 
- * the GNU Public License ("GPL") and the terms of the GPL would require the 
+ * Where this Software is combined with software released under the terms of
+ * the GNU Public License ("GPL") and the terms of the GPL would require the
  * combined work to also be released under the terms of the GPL, the terms
  * and conditions of this License will apply in addition to those of the
  * GPL with the exception of any terms or conditions of this License that
@@ -33,16 +33,16 @@
  * SUCH DAMAGE.
  */
 
-#ifdef	HAVE_REGEX_H
-#	include	<regex.h>
-typedef	regmatch_t	regm_t;
+#ifdef HAVE_REGEX_H
+#include <regex.h>
+typedef regmatch_t regm_t;
 #else
-typedef	struct
+typedef struct
 {
-	off_t	rm_so;
-	off_t	rm_eo;
-}	regm_t;
+    off_t rm_so;
+    off_t rm_eo;
+} regm_t;
 #endif
 
-extern	bool	regexp_seeknext(const char *s,const char *t,int x,regm_t *rmp, bool f);
-extern	bool	regexp_seekprev(const char *s,const char *t,int x,regm_t *rmp, bool f);
+extern bool regexp_seeknext(const char* s, const char* t, int x, regm_t* rmp, bool f);
+extern bool regexp_seekprev(const char* s, const char* t, int x, regm_t* rmp, bool f);
